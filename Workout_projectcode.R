@@ -19,7 +19,7 @@ library(ncdf4) # package for netcdf manipulation
 library(raster) # package for raster manipulation
 library(rgdal) # package for geospatial analysis
 library(ggplot2) # package for plotting
-nc_data <- nc_open("/Users/claregaffey/Downloads/hcdc.mon.mean.nc")
+nc_data <- nc_open("/Users/claregaffey/Downloads/hcdc.mon.mean.nc") #download the file from the dropbox
 #KF <- nc_open("/Users/claregaffey/Downloads/R2202aRBRZBGCcnut04a.NO3allk1.pop.h.05.nc") #karen Frey's nc
 lon <- ncvar_get(nc_data, "x")
 lat <- ncvar_get(nc_data, "y", verbose = F)
@@ -39,7 +39,11 @@ r <- flip(r, direction='y') #
 par(mar = c(0, 0, 0, 4))
 plot(r)
 
-## Trying to make the map nicer
+#Next STEP:
+### I can use that tutorial to define the bounds, so a crop is not necessary
+
+#######
+## Trying to make the map nicer using this site  https://mhallwor.github.io/_pages/MakingMaps
 
 library(maptools)
 sp::degAxis(side = 1)
