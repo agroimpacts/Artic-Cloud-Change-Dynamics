@@ -140,7 +140,6 @@ writeRaster(r, "hcdc1979.tif", "GTiff", overwrite=TRUE)
 #     width = 4, units  = "in", res = 300, bg = "transparent")
 # raster::plotRGB(b, stretch = "lin")
 # dev.off()
-
 ```
 
 
