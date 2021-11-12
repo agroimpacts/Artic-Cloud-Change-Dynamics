@@ -19,7 +19,7 @@ library(ncdf4) # package for netcdf manipulation
 library(raster) # package for raster manipulation
 library(rgdal) # package for geospatial analysis
 library(ggplot2) # package for plotting
-nc_data <- nc_open("/Users/claregaffey/Downloads/hcdc.mon.mean.nc")
+nc_data <- nc_open("/Users/claregaffey/Documents/RClass/hcdc.mon.mean.nc")
 #KF <- nc_open("/Users/claregaffey/Downloads/R2202aRBRZBGCcnut04a.NO3allk1.pop.h.05.nc") #karen Frey's nc
 lon <- ncvar_get(nc_data, "x")
 lat <- ncvar_get(nc_data, "y", verbose = F)
@@ -62,4 +62,8 @@ plot(Narrow2, add = TRUE, col = "blue")
 
 NO3.array <- ncvar_get(KF, "NO3") # store the data in a 3-dimensional array
 dim(NO3.array)
+
+
+######### #unused snippets from overview.rmd
+tunits <- ncatt_get(nc_data,"time","units")
 

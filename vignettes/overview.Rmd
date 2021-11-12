@@ -1,5 +1,5 @@
 ---
-title: "overview"
+title: "Overview"
 output: rmarkdown::html_vignette
 authors: Aandishah Tehzeeb Samara, Serina Khalifa, Clare Gaffey
 date: "2021-11-10"
@@ -8,6 +8,10 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+## Cloud Cover in the Pacific Arctic Region
+
+### Aandishah Tehzeeb Samara, Serina Khalifa, Clare Gaffey
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -18,30 +22,160 @@ knitr::opts_chunk$set(
 ```{r setup}
 # library(asc346)
 ```
-Summary: A brief (up to 250 words) description of the project, and a bullet point or enumerated list of its primary objectives.
-```{r}
+#### _Summary: A brief (up to 250 words) description of the project, and a bullet point or enumerated list of its primary objectives._
+
+As climate change causes rapid warming across the world, the effect is the direst in the Arctic which is warming twice as fast as the rest of the world. It is predicted that by the year 2050, Arctic summers will be sea ice free. The complexity of the Earth’s climate system and its feedback entails that the effects of melting of sea ice have coupled effects in the hydroclimate. As bright sea ice melts exposing the dark deep ocean underneath, the surface transforms from a high albedo surface to a low albedo surface.  This change in albedo is the driver for the increased warming in the Arctic. With more open ocean exposed, combined with the warmer temperatures, the surface is more prone to evaporation. Increase in ocean water evaporation leads to more water vapor available for cloud formation. Cloud cover is one of the largest barriers to creating accurate future climate models, since their impacts on the hydroclimate are difficult to predict and account for. Clouds, with their high albedo, reflect more sunlight, but also act as barrier that traps heat inside the Earth’s surface. In the Arctic especially, clouds play different roles during different season as the type of clouds change seasonally. These changes in cloud structure impact their role in the feedback systems. By analyzing the vertical structure of the clouds in the Arctic, it would give us insight as to how the changes in climate change and sea ice have impacted it. 
+
+_(1)	What influences low altitude cloud cover in the Pacific Arctic? Does this relationship change seasonally?
+
+_(2)	How has the Pacific Arctic Region Cloud Cover changed over time?
+
+_(3)	How has the energy budget changed over time?
+
+#### _Approach and Method: An outline of the analytical methods and code you plan to use, including the names of key packages that you will draw on. This section should be composed of the following sub-sections:_
+
+The most crucial packages for this project will be raster, ncdf4, trend, and XGBoost. 
+
+https://cran.r-project.org/web/packages/trend/index.html
+https://cran.r-project.org/web/packages/ncdf4/index.html
+https://cran.r-project.org/web/packages/xgboost/index.html
+
+The ncdf4 package will be used to read, slice and write the NARR and chlorophyll data. Raster will be used to plot the data outputs from NARR.
+
+The trend package will be used to run the non-parametric trend tests and change point detections. In particular, the functions that will be used are as follows: 
+
+*add table*
+
+To rank influencing factors of low altitude cloud cover, a gradient boosting regression model will be run for all of the available data, as well as separately run per season (JJA, SON, DJF, MAM as summer-spring). The XGBoost package will be used for this step. The analysis will follow the 80-10-10 procedure, using 80% of the data for training the model, 10% for testing, and 10% for validation. An accuracy assessment will be conducted for the models using the mean absolute error metric.
+
+##### _Data: A brief (~250 words) description and visualization of the datasets you will be using. That means spatial plots of the main datasets and their key values, and, as a bonus, a plot of summary statistics, e.g. a histogram or boxplot of one of the more importants variables in the dataset._
+
+The primary dataset used in this analysis will be cloud cover at three altitude levels (low, medium, and high). These datasets will be downloaded as NetCDFs from NARR and will include auxiliary datasets for the regression model. The additional NARR auxiliary variables include wind speed at 10m, air temperature, evaporation, geopotential height, and relative humidity. The NARR datasets are available from 1979-2021. Additional datasets used will be monthly MODIS (2002-2021) chlorophyll-a concentrations and monthly composited SB2 sea ice concentration available from 1978-2020. 
+
+```{r,  warning = FALSE, message = FALSE}
+# created the netcdf and flipped it using the https://rpubs.com/boyerag/297592
+# additional netcdf tasks shown in https://pjbartlein.github.io/REarthSysSci/netCDF.html#get-a-single-time-slice-of-the-data-create-an-r-data-frame-and-write-a-.csv-file
+library(sp) # package for spatial manipulation
+library(ncdf4) # package for netcdf manipulation
+library(raster) # package for raster manipulation
+library(rgdal) # package for geospatial analysis
+library(trend) #package for running trend analysis
+library(ggplot2) # package for plotting
+library(tidyverse) # to manipulate for plotting
+
+#Change this to match the data location
+ppath <- "/Users/claregaffey/Documents/RClass/hcdc.mon.mean.nc" #"C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
+
+nc_data <- nc_open(ppath) 
+nc_data # take a look at the file
+
+# assign variables to objects
+lon <- ncvar_get(nc_data, "x")
+lat <- ncvar_get(nc_data, "y", verbose = F)
+highCC <- ncvar_get(nc_data, "hcdc")
+t <- ncvar_get(nc_data, "time_bnds")
+#^ this also worked t <- ncvar_get(nc_data, "time")
+```
+
+Get some information from the High Cloud Cover NetCDF
+
+```{r,  warning = FALSE, message = FALSE}
+#find out the lengths and dimensions of each variable
+vars = list(lon, lat, highCC, t)
+x <- lapply(vars, dim)
+x
+
+# Create dataframe 
+# first, reshape data
+# matrix (nlon*nlat rows by 2 cols) of lons and lats
+lonlat <- as.matrix(expand.grid(lon,lat))
+
+# get a single slice of layer
+m <- 1
+tmp_slice <- highCC[,,m]
+tmp_vec <- as.vector(tmp_slice)
+length(tmp_vec)
+
+# create dataframe and add names ###THIS IS NOT WORKING YET
+tmp_df01 <- data.frame(cbind(lonlat,tmp_vec))
+dname <- "hcdc"
+names(tmp_df01) <- c("lon","lat", paste(dname,as.character(m), sep="_"))
+head(na.omit(tmp_df01), 10)
+
+
+def <- data.frame(highCC, lat, lon, t)
+#nc_data %>% ggplot() + geom_boxplot(aes(x = lat, y = highCC)) + xlab(NULL)
+
+# get summary statistics for high cloud fraction area
+summary(highCC)
+```
+
+Prepare for plotting
+
+```{r,  warning = FALSE, message = FALSE}
+hcdc.array <- ncvar_get(nc_data, "hcdc") # store the data in a 3-dimensional array
+dim(hcdc.array)
+hcdc.slice <- hcdc.array[, , 49]  # pulling out the first time slice
+dim(hcdc.slice) # checking that this first slice has the dimensions we would expect
+# we can go ahead and save this data in a raster. Note that we provide the coordinate reference system “CRS” in the standard well-known text format. For this data set, it is the common WGS84 system.
+r <- raster(t(hcdc.slice), xmn=min(lon), xmx=max(lon), ymn=min(lat),
+            ymx=max(lat),
+            crs=CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs+ towgs84=0,0,0"))
+#We will need to transpose and flip to orient the data correctly. The best way to figure this out is through trial and error, but remember that most netCDF files record spatial data from the bottom left corner.
+r <- flip(r, direction='y') #
+par(mar = c(0, 0, 0, 4))
+plot(r)
+
+#Writing out geotiff
+writeRaster(r, "hcdc1979.tif", "GTiff", overwrite=TRUE)
+
+
+#!!!!!!NEED TO ADD THE PNG
+# b <- raster::brick(s3url)[[4:2]]
+# png(here::here("external/slides/figures/ghana_planet.png"), height = 4,
+#     width = 4, units  = "in", res = 300, bg = "transparent")
+# raster::plotRGB(b, stretch = "lin")
+# dev.off()
 
 ```
-Approach and Method: An outline of the analytical methods and code you plan to use, including the names of key packages that you will draw on. This section should be composed of the following sub-sections:
-```{r}
 
-```
-Data: A brief (~250 words) description and visualization of the datasets you will be using. That means spatial plots of the main datasets and their key values, and, as a bonus, a plot of summary statistics, e.g. a histogram or boxplot of one of the more importants variables in the dataset.
-```{r}
 
-```
-Code: A bullet point summary of the analysis and coding approach that you propose to follow. For teams, this section should include a description of which member will be responsible for each bullet point.
-```{r}
 
-```
-Timelines: Provide a timeline for when each portion of the analysis will be completed. These timelines should be constructed relative to the time period of presentations (during the last two weeks of class) and final project submission (during exam week). For teams, names should be associated with each step on the timeline.
-```{r}
+##### _Code: A bullet point summary of the analysis and coding approach that you propose to follow. For teams, this section should include a description of which member will be responsible for each bullet point._
 
-```
-Anticipated outcomes: Briefly describe, as bullet points, the outcomes you expect for each of your primary project objectives
-```{r}
+Step 1. Create a shapefile to map the Pacific Arctic Region [Serina], Get the NARR [Aandishah], Chlorophyll and Sea Ice Concentration data [Clare]
 
-```
+Step 2. Crop NARR [Aandishah], sea ice and chlorophyll [Clare] data to match extent. Detrend the data to remove changes from other external forcing. [Aandishah]
+
+Step 3. Reproject [Aandishah] and resample the Chlorophyll and sea ice data to match the extent of the NARR Data [Clare]
+
+Step 4. Aggregate all the data monthly and seasonally [Clare] [Aandishah]
+
+Step 5. Create a time series Linear Regression Maps for each month and season for each variable (1979-2020). [Aandishah], Calculate the energy budget using the SW and LW [Serina]
+
+Step 6. Create Correlation Graphs between each variable and sea ice [Aandishah], XGBoost for the Cloud Cover [Clare]
+
+Step 7. Extract values of the average of each variable from within the DBO sites and plot Line graphs to understand the change over time. [Aandishah]
+
+Step 8. Create the Visualization of all the maps and make them a e s t h e t i c [Aandishah, Clare and Serina]
+
+
+##### _Timelines: Provide a timeline for when each portion of the analysis will be completed. These timelines should be constructed relative to the time period of presentations (during the last two weeks of class) and final project submission (during exam week). For teams, names should be associated with each step on the timeline._
+
+	Serina	Clare	Aandishah
+	
+##### Week 1
+	Creating the Shapefile	Download and Crop the Chlorophyll Data 	Extract and slice each time band for NARR data
+
+##### -Thanksgiving Break-
+
+##### Week 2
+	Help test and debug code 	Reproject, resample, and aggregate data partition and start GXBoost workflow	Create Linear Regression of the time series and plot correlation graphs
+	
+##### Week 3
+	New Variable Extraction, create visualizations.	GXBoost, tuning model, accuracy assessment, create visualizations.	Extract dbo values and plot line graphs, create visualizations.
+
+##### Submitted: December 13
 
 
 
