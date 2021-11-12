@@ -66,4 +66,10 @@ dim(NO3.array)
 
 ######### #unused snippets from overview.rmd
 tunits <- ncatt_get(nc_data,"time","units")
-
+#### Trying to tease out time in their units
+tunits <- ncatt_get(nc_data, "time", "units")
+tunits
+nt <- dim(t)
+t2 <- ncvar_get(nc_data, "time")
+tail( as.POSIXct(t2,origin='1880-01-01 00:00') )
+tail( as.POSIXct(t,origin='1880-01-01 00:00') )
