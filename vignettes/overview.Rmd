@@ -68,6 +68,7 @@ ppath <- "/Users/claregaffey/Documents/RClass/hcdc.mon.mean.nc" #"C:/Users/aandi
 
 nc_data <- nc_open(ppath) 
 nc_data # take a look at the file
+head(lat)
 
 # assign variables to objects
 lon <- ncvar_get(nc_data, "x")
@@ -80,11 +81,15 @@ t <- ncvar_get(nc_data, "time_bnds")
 Get some information from the High Cloud Cover NetCDF
 
 ```{r,  warning = FALSE, message = FALSE}
+# get summary statistics for high cloud fraction area for all time periods
+summary(highCC)
+
 #find out the lengths and dimensions of each variable
-vars = list(lon, lat, highCC, t)
+vars <- list(lon, lat, highCC, t)
 x <- lapply(vars, dim)
 x
 
+#What is the
 # Create dataframe 
 # first, reshape data
 # matrix (nlon*nlat rows by 2 cols) of lons and lats
@@ -97,17 +102,16 @@ tmp_vec <- as.vector(tmp_slice)
 length(tmp_vec)
 
 # create dataframe and add names ###THIS IS NOT WORKING YET
-tmp_df01 <- data.frame(cbind(lonlat,tmp_vec))
-dname <- "hcdc"
-names(tmp_df01) <- c("lon","lat", paste(dname,as.character(m), sep="_"))
-head(na.omit(tmp_df01), 10)
+df <- data.frame(cbind(lonlat,tmp_vec))
+names(df) <- c("lon","lat", paste("hcdc",as.character(m), sep="_"))
+head(na.omit(df), 10) # take a look at our new dataframe
 
 
-def <- data.frame(highCC, lat, lon, t)
-#nc_data %>% ggplot() + geom_boxplot(aes(x = lat, y = highCC)) + xlab(NULL)
+# boxplot at month #1
+df %>% ggplot() + geom_boxplot(aes(x = lat, y = hcdc_1)) + xlab(NULL) + 
+  ylab("High Cloud Area Fraction for month #1")
 
-# get summary statistics for high cloud fraction area
-summary(highCC)
+
 ```
 
 Prepare for plotting
