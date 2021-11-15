@@ -45,7 +45,7 @@ The ncdf4 package will be used to read, slice and write the NARR and chlorophyll
 The trend package will be used to run the non-parametric trend tests and change point detections. In particular, the functions that will be used are as follows: 
 
 
-```{r, out.height = 200, out.width = 500}
+```{r, out.height = 300, out.width = 700, echo = FALSE}
 knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/trend_tests.png")
 ```
 
@@ -101,7 +101,7 @@ x
 lonlat <- as.matrix(expand.grid(lon,lat))
 
 # get a single slice of layer
-m <- 1:12
+m <- 1
 tmp_slice <- highCC[,,m]
 tmp_vec <- as.vector(tmp_slice)
 length(tmp_vec)
@@ -111,12 +111,20 @@ df <- data.frame(cbind(lonlat,tmp_vec))
 names(df) <- c("lon","lat", paste("hcdc",as.character(m), sep="_"))
 # take a look at our new dataframe
 head(na.omit(df), 10)
+```
 
+Box Plot
+
+```{r,  warning = FALSE, eval = FALSE, message = FALSE}
 # boxplot at month #1
 df %>% ggplot() + geom_boxplot(aes(x = lat, y = hcdc_1)) + xlab(NULL) + 
   ylab("High Cloud Area Fraction") + ggtitle("The First Month")
 
 ```
+```{r, echo=FALSE, out.height = 300, out.width = 400}
+knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/boxplot.png")
+```
+
 
 Prepare for plotting
 
@@ -162,7 +170,7 @@ writeRaster(tmp_slice_r, ttl, "IDRISI", overwrite=TRUE)
 
 ```
 
-```{r,  warning = FALSE, message = FALSE, out.height = 250, out.width = 300}
+```{r,  warning = FALSE, echo = FALSE, message = FALSE, out.height = 300, out.width = 350}
 
 #!!!!!!NEED TO ADD THE PNG
 # b <- raster::brick(s3url)[[4:2]]
@@ -198,7 +206,7 @@ Step 8. Create the Visualization of all the maps and make them a e s t h e t i c
 ##### _Timelines: Provide a timeline for when each portion of the analysis will be completed. These timelines should be constructed relative to the time period of presentations (during the last two weeks of class) and final project submission (during exam week). For teams, names should be associated with each step on the timeline._
 
 
-```{r,  out.height = 250, out.width = 600}
+```{r,  out.height = 250, out.width = 700, echo=FALSE}
 knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/timeline.png")
 ```
 
