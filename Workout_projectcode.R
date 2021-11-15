@@ -73,3 +73,25 @@ nt <- dim(t)
 t2 <- ncvar_get(nc_data, "time")
 tail( as.POSIXct(t2,origin='1880-01-01 00:00') )
 tail( as.POSIXct(t,origin='1880-01-01 00:00') )
+
+
+
+
+
+hcdc.array <- ncvar_get(nc_data, "hcdc") # store the data in a 3-dimensional array
+dim(hcdc.array)
+hcdc.slice <- hcdc.array[, , 49]  # pulling out the first time slice
+dim(hcdc.slice) # checking that this first slice has the dimensions we would expect
+# we can go ahead and save this data in a raster. Note that we provide the coordinate reference system “CRS” in the standard well-known text format. For this data set, it is the common WGS84 system.
+r <- raster(t(hcdc.slice), xmn=min(lon), xmx=max(lon), ymn=min(lat),
+            ymx=max(lat),
+            crs=CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs+ towgs84=0,0,0"))
+#We will need to transpose and flip to orient the data correctly. The best way to figure this out is through trial and error, but remember that most netCDF files record spatial data from the bottom left corner.
+r <- flip(r, direction='y') #
+par(mar = c(0, 0, 0, 4))
+plot(r)
+
+#Writing out geotiff
+writeRaster(r, "hcdc1979.tif", "GTiff", overwrite=TRUE)
+
+

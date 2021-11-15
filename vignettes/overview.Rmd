@@ -101,7 +101,7 @@ x
 lonlat <- as.matrix(expand.grid(lon,lat))
 
 # get a single slice of layer
-m <- 1
+m <- 1:12
 tmp_slice <- highCC[,,m]
 tmp_vec <- as.vector(tmp_slice)
 length(tmp_vec)
