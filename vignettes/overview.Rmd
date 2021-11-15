@@ -121,7 +121,7 @@ df %>% ggplot() + geom_boxplot(aes(x = lat, y = hcdc_1)) + xlab(NULL) +
   ylab("High Cloud Area Fraction") + ggtitle("The First Month")
 
 ```
-```{r, echo=FALSE, out.height = 300, out.width = 400}
+```{r, echo=FALSE, out.height = 400, out.width = 500}
 knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/boxplot.png")
 ```
 
@@ -170,16 +170,8 @@ writeRaster(tmp_slice_r, ttl, "IDRISI", overwrite=TRUE)
 
 ```
 
-```{r,  warning = FALSE, echo = FALSE, message = FALSE, out.height = 300, out.width = 350}
-
-#!!!!!!NEED TO ADD THE PNG
-# b <- raster::brick(s3url)[[4:2]]
-library(png)
-#png(here::here("inst/hcdc2021_09.png"), height = 4,
- #   width = 4, units  = "in", res = 300, bg = "transparent")
- #raster::plot(b, stretch = "lin")
- #dev.off()
-
+```{r,  warning = FALSE, echo = FALSE, message = FALSE, out.height = 450, out.width = 700}
+knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/prelim_subplots.png")
 knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/hcdc2021_09.png")
 
 ```
