@@ -111,7 +111,7 @@ head(na.omit(df), 10)
 
 # boxplot at month #1
 df %>% ggplot() + geom_boxplot(aes(x = lat, y = hcdc_1)) + xlab(NULL) + 
-  ylab("High Cloud Area Fraction") + main("The First Month")
+  ylab("High Cloud Area Fraction") + ggtitle("The First Month")
 
 
 ```
