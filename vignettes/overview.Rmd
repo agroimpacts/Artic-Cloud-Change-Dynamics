@@ -64,11 +64,12 @@ library(ggplot2) # package for plotting
 library(tidyverse) # to manipulate for plotting
 
 #Change this to match the data location
-ppath <- "/Users/claregaffey/Documents/RClass/hcdc.mon.mean.nc" #"C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
+ppath <- "/Users/claregaffey/Documents/RClass/hcdc.mon.mean.nc" #(Clare's path)
+# (Aandishah's path) C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
 
 nc_data <- nc_open(ppath) 
 nc_data # take a look at the file
-head(lat)
+
 
 # assign variables to objects
 lon <- ncvar_get(nc_data, "x")
@@ -89,9 +90,9 @@ vars <- list(lon, lat, highCC, t)
 x <- lapply(vars, dim)
 x
 
-#What is the
-# Create dataframe 
-# first, reshape data
+# Let's see what is the visual spread of our data.
+# To do so, we need to create a dataframe from the nc.
+# first, reshape to a matrix
 # matrix (nlon*nlat rows by 2 cols) of lons and lats
 lonlat <- as.matrix(expand.grid(lon,lat))
 
@@ -101,18 +102,20 @@ tmp_slice <- highCC[,,m]
 tmp_vec <- as.vector(tmp_slice)
 length(tmp_vec)
 
-# create dataframe and add names ###THIS IS NOT WORKING YET
+# create dataframe and add names 
 df <- data.frame(cbind(lonlat,tmp_vec))
 names(df) <- c("lon","lat", paste("hcdc",as.character(m), sep="_"))
-head(na.omit(df), 10) # take a look at our new dataframe
+# take a look at our new dataframe
+head(na.omit(df), 10)
 
 
 # boxplot at month #1
 df %>% ggplot() + geom_boxplot(aes(x = lat, y = hcdc_1)) + xlab(NULL) + 
-  ylab("High Cloud Area Fraction for the first month")
+  ylab("High Cloud Area Fraction") + main("The First Month")
 
 
 ```
+
 
 Prepare for plotting
 
