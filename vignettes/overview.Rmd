@@ -44,9 +44,12 @@ The ncdf4 package will be used to read, slice and write the NARR and chlorophyll
 
 The trend package will be used to run the non-parametric trend tests and change point detections. In particular, the functions that will be used are as follows: 
 
-
-```{r, out.height = 300, out.width = 700, echo = FALSE}
-knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/trend_tests.png")
+```{r, echo=FALSE, out.height = 300, out.width = 700, results=FALSE}
+library(here)
+here::here() # set working directory for images
+```
+```{r, echo=FALSE, out.height = 300, out.width = 700}
+knitr::include_graphics(here("images/trend_tests.png"))
 ```
 
 
@@ -122,7 +125,7 @@ df %>% ggplot() + geom_boxplot(aes(x = lat, y = hcdc_1)) + xlab(NULL) +
 
 ```
 ```{r, echo=FALSE, out.height = 400, out.width = 500}
-knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/boxplot.png")
+knitr::include_graphics(here("images/boxplot.png"))
 ```
 
 
@@ -131,7 +134,7 @@ Prepare for plotting
 ```{r,  warning = FALSE, message = FALSE, eval = FALSE}
 #Enter Path to data below
 #ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/"
-ppath <- "/Users/claregaffey/Documents/RClass/"
+ppath <- "/Users/claregaffey/Documents/RClass/" # point to dataset folder
 ncpath <- ppath
 
 #High Cloud Area Fraction
@@ -171,8 +174,8 @@ writeRaster(tmp_slice_r, ttl, "IDRISI", overwrite=TRUE)
 ```
 
 ```{r,  warning = FALSE, echo = FALSE, message = FALSE, out.height = 450, out.width = 700}
-knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/prelim_subplots.png")
-knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/hcdc2021_09.png")
+knitr::include_graphics(here("images/prelim_subplots.png"))
+knitr::include_graphics(here("images/hcdc2021_09.png"))
 
 ```
 
@@ -199,7 +202,7 @@ Step 8. Create the Visualization of all the maps and make them a e s t h e t i c
 
 
 ```{r,  out.height = 250, out.width = 700, echo=FALSE}
-knitr::include_graphics("/Users/claregaffey/Documents/RClass/asc346/images/timeline.png")
+knitr::include_graphics(here("images/timeline.png"))
 ```
 
 
