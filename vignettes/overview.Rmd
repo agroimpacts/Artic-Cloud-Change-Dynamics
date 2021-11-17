@@ -70,8 +70,24 @@ library(trend) #package for running trend analysis
 library(ggplot2) # package for plotting
 library(tidyverse) # to manipulate for plotting
 
-#Change this to match the data location
-ppath <- here::here("external/data/hcdc.mon.mean.nc") 
+```
+
+Download the cloud dataset
+
+```{r,  warning = FALSE, message = FALSE, eval=FALSE}
+destfile <- here::here("external/data/hcdc.mon.mean.nc")
+url <-  "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/hcdc.mon.mean.nc"
+#this should work but didn't:
+#nc_data <- download.file(url = url, destfile = destfile) 
+# Work around to download the data: 
+browseURL(url)
+```
+
+Unpack the netcdf
+
+```{r,  warning = FALSE, message = FALSE}
+#Once you downloaded the data, change this to match the data location
+ppath <- here::here("external/data/hcdc.mon.mean.nc")
 
 nc_data <- nc_open(ppath) 
 nc_data # take a look at the file
@@ -132,7 +148,8 @@ Prepare for plotting
 
 ```{r,  warning = FALSE, message = FALSE, eval = FALSE}
 #Enter Path to data below
-#ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/"
+# The data cannot be saved in the github repo
+# To download the 
 ppath <- here::here("external/data/") # point to dataset folder
 ncpath <- ppath
 
