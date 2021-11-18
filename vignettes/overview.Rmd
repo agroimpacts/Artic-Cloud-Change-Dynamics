@@ -45,7 +45,7 @@ The ncdf4 package will be used to read, slice and write the NARR and chlorophyll
 The trend package will be used to run the non-parametric trend tests and change point detections. In particular, the functions that will be used are as follows:  
 
 ```{r, echo=FALSE, out.height = 300, out.width = 700, results=FALSE}
-library(here)
+library(here) # set up working direcoty
 here::here() # set working directory for images
 ```
 ```{r, echo=FALSE, out.height = 300, out.width = 700}
@@ -70,7 +70,6 @@ library(trend) #package for running trend analysis
 library(ggplot2) # package for plotting
 library(tidyverse) # to manipulate for plotting
 
-<<<<<<< HEAD
 ```
 
 Download the cloud dataset
@@ -89,11 +88,6 @@ Unpack the netcdf
 ```{r,  warning = FALSE, message = FALSE}
 #Once you downloaded the data, change this to match the data location
 ppath <- here::here("external/data/hcdc.mon.mean.nc")
-=======
-#Change this to match the data location
-ppath <- "/Users/claregaffey/Documents/RClass/hcdc.mon.mean.nc" #(Clare's path)
-# (Aandishah's path) C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
->>>>>>> parent of c82cc1f... Uploaded data and removed hard path
 
 nc_data <- nc_open(ppath) 
 nc_data # take a look at the file
@@ -154,14 +148,9 @@ Prepare for plotting
 
 ```{r,  warning = FALSE, message = FALSE, eval = FALSE}
 #Enter Path to data below
-<<<<<<< HEAD
 # The data cannot be saved in the github repo
 # To download the 
 ppath <- here::here("external/data/") # point to dataset folder
-=======
-#ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/"
-ppath <- "/Users/claregaffey/Documents/RClass/" # point to dataset folder
->>>>>>> parent of c82cc1f... Uploaded data and removed hard path
 ncpath <- ppath
 
 #High Cloud Area Fraction
@@ -247,8 +236,3 @@ knitr::include_graphics(here("images/timeline.png"))
 <!-- 	New Variable Extraction, create visualizations.	GXBoost, tuning model, accuracy assessment, create visualizations.	Extract dbo values and plot line graphs, create visualizations. -->
 
 <!-- ##### Submitted: December 13 -->
-
-
-
-
-
