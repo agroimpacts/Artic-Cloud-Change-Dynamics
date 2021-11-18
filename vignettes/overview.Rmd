@@ -45,7 +45,7 @@ The ncdf4 package will be used to read, slice and write the NARR and chlorophyll
 The trend package will be used to run the non-parametric trend tests and change point detections. In particular, the functions that will be used are as follows:  
 
 ```{r, echo=FALSE, out.height = 300, out.width = 700, results=FALSE}
-library(here) # set up working direcoty
+library(here)
 here::here() # set working directory for images
 ```
 ```{r, echo=FALSE, out.height = 300, out.width = 700}
