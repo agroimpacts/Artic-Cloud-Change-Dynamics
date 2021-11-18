@@ -81,7 +81,7 @@ url <-  "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/hcdc.m
 #nc_data <- download.file(url = url, destfile = destfile) 
 # Work around to download the data: 
 browseURL(url)
-```
+``` 
 
 Unpack the netcdf
 
