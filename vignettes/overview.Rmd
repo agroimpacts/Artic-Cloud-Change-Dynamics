@@ -5,8 +5,10 @@ authors: Aandishah Tehzeeb Samara, Serina Khalifa, Clare Gaffey
 date: "2021-11-10"
 vignette: >
   %\VignetteIndexEntry{overview}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Cloud Cover in the Pacific Arctic Region
@@ -71,8 +73,9 @@ library(ggplot2) # package for plotting
 library(tidyverse) # to manipulate for plotting
 
 #Change this to match the data location
-ppath <- "/Users/claregaffey/Documents/RClass/hcdc.mon.mean.nc" #(Clare's path)
-# (Aandishah's path) C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
+ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
+#(Clare's path)
+# (Aandishah's path) #C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
 
 nc_data <- nc_open(ppath) 
 nc_data # take a look at the file
@@ -112,8 +115,16 @@ length(tmp_vec)
 # create dataframe and add names 
 df <- data.frame(cbind(lonlat,tmp_vec))
 names(df) <- c("lon","lat", paste("hcdc",as.character(m), sep="_"))
+
 # take a look at our new dataframe
 head(na.omit(df), 10)
+
+#convert to data matrix
+dm <- data.matrix(df)
+head(dm)
+
+ts(data = dm, start = 1, end = numeric(), frequency = 1,
+   deltat = 1, ts.eps = getOption("ts.eps"), class = , names = )
 ```
 
 Box Plot
@@ -127,14 +138,11 @@ df %>% ggplot() + geom_boxplot(aes(x = lat, y = hcdc_1)) + xlab(NULL) +
 ```{r, echo=FALSE, out.height = 400, out.width = 500}
 knitr::include_graphics(here("images/boxplot.png"))
 ```
-
-
 Prepare for plotting
-
 ```{r,  warning = FALSE, message = FALSE, eval = FALSE}
 #Enter Path to data below
 #ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/"
-ppath <- "/Users/claregaffey/Documents/RClass/" # point to dataset folder
+ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/" # point to dataset folder
 ncpath <- ppath
 
 #High Cloud Area Fraction
@@ -150,7 +158,7 @@ var.nc1<-brick(ncfname1,varname=dname1)
 var.nc1
 plot(var.nc1[[1:12]]) #plot first 12 maps
 
-m <- 513 #which time slice do we want to view (can use this to create a LOOP later)
+m <- 1 #which time slice do we want to view (can use this to create a LOOP later) 1-504
 #subset extracts a single layer from the raster brick
 tmp_slice_r<-subset(var.nc1,m)
 dim(tmp_slice_r)
@@ -159,15 +167,21 @@ plot(tmp_slice_r)
 #create color palettes:
 temp.palette <- rev(colorRampPalette(c("darkred","red","orange",
                                        "lightyellow","white","azure",
-                                       "cyan","blue","darkblue"))(100))
+                                    "cyan","blue","darkblue"))(100))
 
 TIME <- as.POSIXct(substr(var.nc1@data@names, start=2, stop=20), format="%Y.%m.%d")
 
 #Create a title for plot: take TIME[m] string and how many characters from the left to keep in title? 7 or 10
-ttl <- paste(dname1, " ", substr(TIME[m], 1, 7),sep="")
+ttl <- paste(dname1,"_", substr(TIME[m], 1, 7),sep="")
 
 #test it
 spplot(tmp_slice_r,  main = ttl, col.regions=temp.palette)
+
+tmp_slice_dm <- data.matrix(var.nc1)
+
+
+myraster.mk <- calc(myraster,function(x){MannKendall(rev(x))$sl})
+
 #save it
 writeRaster(tmp_slice_r, ttl, "IDRISI", overwrite=TRUE)
 
