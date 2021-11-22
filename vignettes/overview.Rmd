@@ -44,7 +44,7 @@ https://cran.r-project.org/web/packages/xgboost/index.html
 
 The ncdf4 package will be used to read, slice and write the NARR and chlorophyll data. Raster will be used to plot the data outputs from NARR.
 
-The trend package will be used to run the non-parametric trend tests and change point detections. In particular, the functions that will be used are as follows: 
+The trend package will be used to run the non-parametric trend tests and change point detections. In particular, the functions that will be used are as follows:  
 
 ```{r, echo=FALSE, out.height = 300, out.width = 700, results=FALSE}
 library(here) # set up working direcoty
@@ -72,10 +72,31 @@ library(trend) #package for running trend analysis
 library(ggplot2) # package for plotting
 library(tidyverse) # to manipulate for plotting
 
+<<<<<<< HEAD
 #Change this to match the data location
 ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
 #(Clare's path)
 # (Aandishah's path) #C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
+=======
+```
+
+Download the cloud dataset
+
+```{r,  warning = FALSE, message = FALSE, eval=FALSE}
+destfile <- here::here("external/data/hcdc.mon.mean.nc")
+url <-  "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/hcdc.mon.mean.nc"
+#this should work but didn't:
+#nc_data <- download.file(url = url, destfile = destfile) 
+# Work around to download the data: 
+browseURL(url) 
+``` 
+
+Unpack the netcdf
+
+```{r,  warning = FALSE, message = FALSE}
+#Once you downloaded the data, change this to match the data location
+ppath <- here::here("external/data/hcdc.mon.mean.nc")
+>>>>>>> a3de6d412d97d3c3ca4e3983feb9de40af65a357
 
 nc_data <- nc_open(ppath) 
 nc_data # take a look at the file
@@ -141,8 +162,14 @@ knitr::include_graphics(here("images/boxplot.png"))
 Prepare for plotting
 ```{r,  warning = FALSE, message = FALSE, eval = FALSE}
 #Enter Path to data below
+<<<<<<< HEAD
 #ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/"
 ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/" # point to dataset folder
+=======
+# The data cannot be saved in the github repo
+# To download the 
+ppath <- here::here("external/data/") # point to dataset folder
+>>>>>>> a3de6d412d97d3c3ca4e3983feb9de40af65a357
 ncpath <- ppath
 
 #High Cloud Area Fraction
@@ -234,8 +261,3 @@ knitr::include_graphics(here("images/timeline.png"))
 <!-- 	New Variable Extraction, create visualizations.	GXBoost, tuning model, accuracy assessment, create visualizations.	Extract dbo values and plot line graphs, create visualizations. -->
 
 <!-- ##### Submitted: December 13 -->
-
-
-
-
-
