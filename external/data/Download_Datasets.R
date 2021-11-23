@@ -1,6 +1,7 @@
 ## Script to download the datasets for Arctic-Cloud-Change-Dynamics
 
 # Install libraries
+
 if (!("stringr" %in% installed.packages())) {
   install.packages("stringr")
 }
