@@ -46,7 +46,7 @@ urls <- list(
   #geopotential height
   "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/hgt.tropo.mon.mean.nc",
   #relative humidity at 2 m
-  "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/rhum.2m.mon.mean.nc",
+  "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/rhum.2m.mon.mean.nc"
 )
 
 for (url in urls) {
