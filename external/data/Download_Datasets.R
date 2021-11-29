@@ -38,7 +38,7 @@ urls <- list(
   #low cloud
   "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/lcdc.mon.mean.nc",
   #wind speed at 10 m
-  "https://downloads.psl.noaa.gov/Datasets/NARR/Derived/monolevel/wspd.10m.mon.ltm.nc",
+  "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/wspd.10m.mon.mean.nc",
   #Pressure
   "https://downloads.psl.noaa.gov/Datasets/NARR/Monthlies/monolevel/pres.sfc.mon.mean.nc",
   #accumulated total evaporation
