@@ -42,13 +42,38 @@ nt <- dim(time)
 nt
 
 
-# get soil moisture
+# get high cloud fraction
 hcdc_array <- ncvar_get(ncin, dname1)
 dlname <- ncatt_get(ncin, dname1, "long_name")
 dunits <- ncatt_get(ncin, dname1, "units")
 fillvalue <- ncatt_get(ncin, dname1, "_FillValue")
 dim(hcdc_array)
 
+#Slice of first 12 months
 hcdc_slice12 <- hcdc_array[,,1:12] #Changing the 1:2, changes the number of time bands we are using
 dim(hcdc_slice12)
+
+lon <- ncvar_get(ncin, "lon")
+dim(lon)
+lat <- ncvar_get(ncin, "lat")
+dim(lat)
+
+
+# replace netCDF fill values with NA's
+hcdc_array[hcdc_array==fillvalue$value] <- NA
+length(na.omit(as.vector(hcdc_array[,,1])))
+
+
+# get a single slice or layer (January)
+m <- 1
+hc_slice <- hcdc_array[,,m]
+
+# create dataframe -- reshape data
+# matrix (nlon*nlat rows by 2 cols) of lons and lats
+lonlat <- as.matrix(expand.grid(lon,lat))
+dim(lonlat)
+
+# vector of `HC` values
+hc_vec <- as.vector(hc_slice)
+length(hc_vec)
 

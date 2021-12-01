@@ -27,99 +27,24 @@ time
 tunits <- ncatt_get(ncin,"time","units")
 nt <- dim(time)
 nt
+##############################################################################
+##############################################################################
+#raster brick to data frame
+var.nc <- brick(ncfname1, varname=dname1, layer="time") #reopen netcdf file as Raster brick for TIME variable
+var.nc
+
+#TIME: remove H M S from time format
+TIME <- as.POSIXct(substr(var.nc@data@names, start=2, stop=20), format="%Y.%m.%d")
+df <- data.frame(INDEX = 1:length(TIME), TIME=TIME)
+head(TIME)
+tail(TIME)
+head(df)
+
+plot(var.nc[[1:12]])
 
 
-hcdc_array <- ncvar_get(ncin, dname1)
-dlname <- ncatt_get(ncin, dname1,"long_name")
-dunits <- ncatt_get(ncin, dname1,"units")
-fillvalue <- ncatt_get(ncin, dname1,"_FillValue")
-dim(hcdc_array)
 
-# get global attributes
-title <- ncatt_get(ncin,0,"title")
-institution <- ncatt_get(ncin,0,"institution")
-datasource <- ncatt_get(ncin,0,"source")
-references <- ncatt_get(ncin,0,"references")
-history <- ncatt_get(ncin,0,"history")
-Conventions <- ncatt_get(ncin,0,"Conventions")
-
-
-# replace netCDF fill values with NA's
-hcdc_array[hcdc_array==fillvalue$value] <- NA
-length(na.omit(as.vector(hcdc_array[,,1])))
-
-
-# get a single slice or layer (January)
-m <- 1
-hc_slice <- hcdc_array[,,m]
-
-image(lon,lat,hc_slice, col=rev(brewer.pal(10,"RdBu")))
-
-# levelplot of the slice
-grid <- expand.grid(lon=lon, lat=lat)
-cutpts <- c(-50,-40,-30,-20,-10,0,10,20,30,40,50)
-levelplot(hc_slice ~ lon * lat, data=grid, at=cutpts, cuts=11, pretty=T,
-          col.regions=(rev(brewer.pal(10,"RdBu"))))
-
-# create dataframe -- reshape data
-# matrix (nlon*nlat rows by 2 cols) of lons and lats
-lonlat <- as.matrix(expand.grid(lon,lat))
-dim(lonlat)
-
-# vector of `HC` values
-hc_vec <- as.vector(hc_slice)
-length(hc_vec)
-
-# create dataframe and add names
-hc_df01 <- data.frame(cbind(lonlat,hc_vec))
-names(hc_df01) <- c("lon","lat",paste(dname1,as.character(m), sep="_"))
-
-head(na.omit(hc_df01), 10)
-tail(na.omit(hc_df01), 10)
-
-# reshape the array into vector
-hc_vec_long <- as.vector(hcdc_array)
-length(hc_vec_long)
-
-# reshape the vector into a matrix
-hc_mat <- matrix(hc_vec_long, nrow=nlon*nlat, ncol=nt)
-dim(hc_mat)
-hc_mat[1:12]
-
-# create a dataframe
-lonlat <- as.matrix(expand.grid(lon,lat))
-hc_df02 <- data.frame(cbind(lonlat,hc_mat))
-names(hc_df02) <- c("lon","lat","tmpJan","tmpFeb","tmpMar","tmpApr","tmpMay","tmpJun",
-                     "tmpJul","tmpAug","tmpSep","tmpOct","tmpNov","tmpDec")
-# options(width=96)
-head(na.omit(hc_df02[3:14], 20))
-
-
-# get the annual mean and min and max HC
-hc_df02$maxhc <- apply(hc_df02[3:14],1,max) # max HC
-hc_df02$minhc <- apply(hc_df02[3:14],1,min) # min HC
-hc_df02$meanhc <- apply(hc_df02[3:14],1,mean) # annual (i.e. row) means
-head(na.omit(hc_df02[516:518]))
-#
-# tmp.slice <- tmp.array[,,1]
-# tas <- tmp.array[,,1]
-#
-# tmp_array[tmp_array==fillvalue$value] <- NA
-#
-#
-# #raster brick to data frame
-# var.nc <- brick(ncfname1, varname=dname1, layer="time") #reopen netcdf file as Raster brick for TIME variable
-# var.nc
-#
-# #TIME: remove H M S from time format
-# TIME <- as.POSIXct(substr(var.nc@data@names, start=2, stop=20), format="%Y.%m.%d")
-# df <- data.frame(INDEX = 1:length(TIME), TIME=TIME)
-# head(TIME)
-# tail(TIME)
-# head(df)
-#
-#
-# library(ggplot2)
+## library(ggplot2)
 # library(tidyverse)
 #
 # mapCDFtemp <- function(lat,lon,tas) #model and perc should be a string
