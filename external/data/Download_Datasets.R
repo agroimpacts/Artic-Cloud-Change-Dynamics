@@ -125,8 +125,8 @@ for (url in rank) {
 ####################################################################
 
 # Monthly RST are saved here
-browseURL("https://clarkuedu-my.sharepoint.com/:f:/g/personal/cgaffey_clarku_edu/EgVcDbETKIpNs1jdFO9IDX0BGuYTnMRXj9hDU1yPP6SM0g?e=YhdYjd")
-# Enter Password: toast
+browseURL("https://clarkuedu-my.sharepoint.com/:f:/g/personal/cgaffey_clarku_edu/EgVcDbETKIpNs1jdFO9IDX0Bq5JM51hTJ_I06kjTO7aINQ?e=0Ajnmn")
+
 
 
 # If starting from scratch:
@@ -147,4 +147,4 @@ browseURL("https://clarkuedu-my.sharepoint.com/:f:/g/personal/cgaffey_clarku_edu
 
 ####################################################################
 
-browseURL("https://clarkuedu-my.sharepoint.com/:u:/g/personal/cgaffey_clarku_edu/EU4WEmzi3D9Kpnhjjy-4yyoBN4poeEl843D7jh8tvDZlWQ?e=T4L37U")
+browseURL("https://clarkuedu-my.sharepoint.com/:f:/g/personal/cgaffey_clarku_edu/EsUkVh4Sb3JKl-dLJdzVJK8BHRIBAlmUA5cwEmQMhbWGbA?e=AdD3sH")
