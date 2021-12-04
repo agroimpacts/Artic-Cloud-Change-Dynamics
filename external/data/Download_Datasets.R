@@ -123,6 +123,13 @@ for (url in rank) {
 ## Sea ice concentration
 
 ####################################################################
+
+# Monthly RST are saved here
+browseURL("https://clarkuedu-my.sharepoint.com/:f:/g/personal/cgaffey_clarku_edu/EgVcDbETKIpNs1jdFO9IDX0BGuYTnMRXj9hDU1yPP6SM0g?e=YhdYjd")
+# Enter Password: toast
+
+
+# If starting from scratch:
 # We could download the data using HTTPS and adjusting the above
 # to accomodate https://n5eil01u.ecs.nsidc.org/PM/NSIDC-0051.001/ as the url
 # and the file names. However, this method downloads the global Arctic region
@@ -131,4 +138,13 @@ for (url in rank) {
 # Therefore, the easiest way to do this is through the website GUI
 # Following the link to get started:
 # https://nsidc.org/data/nsidc-0051
-browesURL("https://nsidc.org/data/nsidc-0051")
+#browesURL("https://nsidc.org/data/nsidc-0051")
+
+
+####################################################################
+
+## DBO3 shapefile
+
+####################################################################
+
+browseURL("https://clarkuedu-my.sharepoint.com/:u:/g/personal/cgaffey_clarku_edu/EU4WEmzi3D9Kpnhjjy-4yyoBN4poeEl843D7jh8tvDZlWQ?e=T4L37U")
