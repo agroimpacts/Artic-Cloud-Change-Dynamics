@@ -75,7 +75,7 @@ ggplot() +
 
 
 
-
+# 4.
 #####################
 # Cloud data
 lcl <- "/Volumes/My Passport/RProject2021/lcdc.mon.mean.nc" #Users/claregaffey/Downloads/lcdc.mon.mean.nc"#/
@@ -160,14 +160,35 @@ prepped_lcdc <- getValues(mystack) %>%
   as_tibble()
 write.table(prepped_lcdc , file = "/Users/claregaffey/Desktop/prepped_lcdc.csv")
 
+#Exploring the datasets
+outlcdc <- "/Users/claregaffey/Desktop/lcdc_netCDF.nc"
+outlc <- nc_open(outlcdc)
+lclcsv <- read_csv("/Users/claregaffey/Desktop/prepped_lcdc.csv")
+head(lclcsv)
+prepped_lcdcDF <- as.data.frame(prepped_lcdc)
+prepped_lcdcDF[10000,5:10]
+dim(prepped_lcdc)
+newbricklcl <- brick(outlcdc) # similar to b, but without CRS. But maybe i don't need projection for my next ste[ anywya]
+projectRaster(newbricklcl, crs = crs(sictif))
+crs(newbricklcl) <- "EPSG:3413"
 
-
-#b <- brick(mystack)
-#plot(b)
-plot(mystack)
+plot(newbricklcl[260]) # WHY doesn't this work?
 ggplot() +
   layer_spatial(mystack[1]) # WHY doesn't this work?
+ggplot() +
+  layer_spatial(newbricklcl[260]) # WHY doesn't this work?
 crs(mystack)
+ggplot() +
+  layer_spatial(b[260])# WHY doesn't this work?
+plot(b[204])
+#but maybe i dont need to plot them again anyway.
+#Next steps: see exactly what do i want for xgboost inputs
+#tailor the saved outputs of the loop to that
+# Write that loop into a function
+# Apply that function to all datasets (mi might need to include a if/else statement for chloroophyyll for files where there is no data within the roi)
+# Fine tune the visuals I want (titles, etc.) and save to pngs to call in vignette
+# Move onto xgboost
+
 
 #messing aorund
 mew <- var33 %>% projectRaster(crs = crs(var.sictif)) %>% crop(y = dbo3_clo)  %>% resample(y = chldbo3varlay1)
@@ -218,7 +239,8 @@ tmp_slice_dm <- data.matrix(var.nc1)
 test1 <- ts(data = var.nc1, start = 1, end = 504, frequency = 1, names = pat)
 #//////////////////////////////////
 
-
+# 5.
+##############################
 # Evaporation
 
 eva <- "/Volumes/My Passport/RProject2021/evap.mon.mean.nc"
