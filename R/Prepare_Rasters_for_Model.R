@@ -253,7 +253,7 @@ spplot(tmp_slice_r,  main = ttl, col.regions=temp.palette)
 tmp_slice_dm <- data.matrix(var.nc1)
 
 test1 <- ts(data = var.nc1, start = 1, end = 504, frequency = 1, names = pat)
-#//////////////////////////////////
+#/////////////////////////////////
 
 
 
