@@ -157,6 +157,53 @@ tmp_slice_r<-subset(var.nc1,m)
 dim(tmp_slice_r)
 plot(tmp_slice_r)
 
+#loop building to keep things spatial:
+#This works:
+tmp <- subset(var.nc1,2)
+r <-tmp %>%
+  projectRaster(crs = crs(var.sictif))  %>%
+  crop(y = dbo3_clo) %>%
+  resample(y = chldbo3varlay1)
+ggplot() +
+  layer_spatial(r)
+# So why doesn't my loop create plottable data?
+dbo3_clo <- dbo3
+var.ncl22 <- var.nc1
+#var.ncl22 <- var.eva[[1:2]] # Biulding a test
+ek <- dim((var.ncl22))#var.nc1)
+mystack <- stack()
+
+for (i in 1:ek[3]){
+  r <- subset(var.ncl22,i) %>%
+    projectRaster(crs = crs(var.sictif))  %>%
+    crop(y = dbo3_clo) %>%
+    resample(y = chldbo3varlay1)
+  print(i)
+  # I should stack them, then create 1 tibble outside of the loop
+  mystack <- stack(mystack, r)
+}
+
+tmp <- "/Users/claregaffey/Desktop/"
+b <- brick(mystack)#If i want  to convert the stack back to a brick
+writeRaster(b, filename=file.path(tmp, "lcdc_netCDF.nc"), format="CDF", overwrite=TRUE)
+# Create a tibble for input for xgboost
+prepped_lcdc <- getValues(mystack) %>%
+  as_tibble()
+write.table(prepped_lcdc , file = "/Users/claregaffey/Desktop/prepped_lcdc.csv")
+
+lcl_mon_df <- as.data.frame(cellStats(x = mystack, stat = "mean"))
+head(lcl_mon_df)
+names(lcl_mon_df) <- c("Year_Month", "LCC") #change the second one to an input object for reproducibility
+dim(lcl_mon_df)
+# There's proboably an easier way to create this in my loop
+
+
+
+
+
+
+
+
 #///////////////////////////////////
 pat <- seq(as.Date("1979/1/1"), by = "month", length.out = 504)
 #create color palettes:
