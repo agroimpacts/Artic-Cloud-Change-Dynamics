@@ -44,20 +44,17 @@ ggplot() +
   layer_spatial(sicrop)
 # Calculate the mean of DBO3 sea ice concentration for DBO3 on our sample date
 cellStats(x = sicrop, stat = "mean")
-
 #^^^^^^^^^^^^^^^^^^^^^^^
-
-#Need SIC Loop
+# Bring in all of the sea ice time series data
 mystack <- stack()
 files <- list.files(path="/Volumes/My Passport/RProject2021/SeaIce_MonthlySB2/",
                     pattern="*.rst", full.names=TRUE, recursive=FALSE)
-lapply(files, function(x) {
+for (x in files) {
   sicbrick <- brick(x) # create a raster brick
+  crs(sicbrick) <- "EPSG:3413" # define projection
   mystack <- stack(mystack, sicbrick) #stack all of the bricks
-})
+}
 var.sic <- brick(mystack) # create a brick from the stack
-
-
 
 # 3.
 #####################
@@ -75,7 +72,8 @@ chla
 var.chl<-brick(chl,varname="chlor_a")
 crs(var.chl)
 # reproejct chla data and crop
-lay1_chl <- projectRaster(var.chl[[1]], crs = crs(var.sictif)) #will only work if i plug in the index
+# (will only work if i plug in the index)
+lay1_chl <- projectRaster(var.chl[[1]], crs = crs(var.sictif))
 chldbo3varlay1 <- crop(x = lay1_chl, y = dbo3)
 # The projected MODIS chlorophyll and our region of interest
 ggplot() +
@@ -87,16 +85,23 @@ ggplot() +
   layer_spatial(chldbo3varlay1)
 
 #^^^^^^^^^^^^^^^^^^^^^^^
+# Bring in all of the chlorophyll time series data
+mystack <- stack()
+files <- list.files(path="/Volumes/My Passport/RProject2021/MODIS_chl/",
+                    pattern="*.nc", full.names=TRUE, recursive=FALSE)
+for (x in files) {
+  chlbrick <- brick(x, varname="chlor_a") # create a raster brick
+  mystack <- stack(mystack, chlbrick) #stack all of the bricks
+}
+var.chla <- brick(mystack) # create a brick from the stack
 
-#Need CHL LOOP
 
 
 ##########################
-# NARR Reanalysis datasets
+# Preprocess all datasets
 ##########################
-# The following datasets are netcdfs with similar structures, and due to their
-# consistency in file type, we can use a function to process them. Note, it
-# does rely on files made from the SIC and CHL processing (above) for reference.
+# Function converts raster bricks into monthly averaged values over ROI in a csv.
+# Note it does rely on files made from the SIC and CHL examples for reference.
 
 NARR_dataprep <- function(NARR_brick, ROI) {
   ek <- dim(NARR_brick)
@@ -117,7 +122,7 @@ NARR_dataprep <- function(NARR_brick, ROI) {
   # make a dataframe with the raster name (time) and averaged variable lists
   nam <- paste0(deparse(substitute(NARR_brick)), ".csv") # for file naming
   df <- do.call(rbind, Map(data.frame, Time=time, Variable=meanlcl))
-  names(df)[names(df) == 'Variable'] <- nam #rename var column to match header
+  names(df)[names(df) == 'Variable'] <- substr(nam,5,8) #rename var column
   df$Year.month.day <-  substr(df$Time,2,11) # new column for date info
   # export to a csv
   write.csv(df, file = paste("/Users/claregaffey/Documents/RClass/", nam),
@@ -125,11 +130,22 @@ NARR_dataprep <- function(NARR_brick, ROI) {
   return(head(df)) # display some rows of our dataframe
 }
 
+# Run for all sea ice data
+NARR_dataprep(var.sic, dbo3)
 
+# Run for all chlorophyll data
+NARR_dataprep(var.chla, dbo3)
+
+
+##########################
+# NARR Reanalysis datasets
+##########################
+# The following datasets are netcdfs with similar structures, and due to their
+# consistency in file type, we can process them routinely.
 
 # 4.
 #####################
-# Cloud data
+# Cloud data example
 lcl <- "/Volumes/My Passport/RProject2021/lcdc.mon.mean.nc" #Users/claregaffey/Downloads/lcdc.mon.mean.nc"#/
 lcdc <- nc_open(lcl)
 #check out the netcdf contents
@@ -139,7 +155,8 @@ var.nc1<-brick(lcl,varname="lcdc")
 # Check out the contents
 var.nc1
 # reproject raster data to match the other raster datasets
-lay1_clo <- projectRaster(var.nc1[[1]], crs = crs(var.sictif))#will only work if i plug in the index
+# (will only work if i plug in the index)
+lay1_clo <- projectRaster(var.nc1[[1]], crs = crs(var.sictif))
 # check that it reprojected
 crs(lay1_clo)
 # crop to DBO3 region of interest (ROI)
@@ -163,111 +180,6 @@ cellStats(x = clodbo3varlay1, stat = "mean")
 # To preprocess the dataset for the regression model:
 NARR_dataprep(var.nc1, dbo3)
 
-
-
-################
-
-m <- 1:3
-var.ncl23<-subset(var.airT,m)
-#var.ncl23 <- var.nc1[m] #second way of doing the same thing
-ek <- dim((var.ncl23))#var.nc1)
-#mystack <- stack()
-time <- list()
-meanlcl <- list()
-var.nc1[2]
-
-for (i in 1:3){
-  r <- subset(var.ncl23,i)
-  print(i)
-  time <- append(time, names(r))
-  k <- cellStats(x = r, stat = "mean")
-  meanlcl <- append(meanlcl, k)
-}
-
-df <- do.call(rbind, Map(data.frame, Time=time, LowCloud=meanlcl))
-df$Year.month.day <-  substr(df$Time,2,11)
-
-
-
-
-# The original loop
-ek <- dim(var.airT)
-time <- list()
-meanlcl <- list()
-
-for (i in 1:ek[3]){
-  r <- subset(var.ncl23,i) %>%
-  projectRaster(crs = crs(var.sictif))  %>%
-  crop(y = dbo3) %>%
-  #resample(y = chldbo3varlay1)
-  print(i)
-  time <- append(time, names(r))
-  k <- cellStats(x = r, stat = "mean")
-  meanlcl <- append(meanlcl, k)
-}
-
-lcl_df <- do.call(rbind, Map(data.frame, Time=time, LowCloud=meanlcl))
-lcl_df$Year.month.day <-  substr(lcl_df$Time,2,11)
-write.table(lcl_df , file = "/Users/claregaffey/Documents/RClass/prepped_lcdc.csv")
-
-dim(var.test)
-rm(var.test)
-
-
-
-
-## NEXT STEPS
-# loop for sic and chl (mi might need to include a if/else statement for chloroophyyll for files where there is no data within the roi)
-# Fine tune the visuals I want (titles, etc.) and save to pngs to call in vignette
-# create one dataframe from my variable dataframes
-# Move onto xgboost
-
-#Note for xgboost:
-# zeros are considered mssing data in the matrix
-#so based on this convo
-# potential solutions is: https://github.com/dmlc/xgboost/issues/4601
-#"I 'd image if there are only a couple of non-missing zero values, one would be able to circumvent this behaviour by explicitly setting their values to 0.0 in the sparse matrix".
-# also see last bit of: https://arfer.net/w/xgboost-sparsity
-# or my book "We can also mark the values as a NaN and let the XGBoost framework treat the missing values as a distinct value for the feature."
-
-
-
-
-
-
-
-
-
-#///////////\\\\\\\\\\\/\/\/\/\
-m <- 1 #which time slice do we want to view (can use this to create a LOOP later) 1-504
-#subset extracts a single layer from the raster brick
-tmp_slice_r<-subset(var.nc1,m)
-dim(tmp_slice_r)
-plot(tmp_slice_r)
-plot(var.nc1[[2]])
-
-#///////////////////////////////////
-pat <- seq(as.Date("1979/1/1"), by = "month", length.out = 504)
-#create color palettes:
-temp.palette <- rev(colorRampPalette(c("darkred","red","orange",
-                                       "lightyellow","white","azure",
-                                       "cyan","blue","darkblue"))(100))
-
-TIME <- as.POSIXct(substr(var.nc1@data@names, start=2, stop=20), format="%Y.%m.%d")
-
-#Create a title for plot: take TIME[m] string and how many characters from the left to keep in title? 7 or 10
-ttl <- paste("Low cloud cover","_", substr(TIME[m], 1, 7),sep="")
-
-#test it
-spplot(tmp_slice_r,  main = ttl, col.regions=temp.palette)
-
-tmp_slice_dm <- data.matrix(var.nc1)
-
-test1 <- ts(data = var.nc1, start = 1, end = 504, frequency = 1, names = pat)
-#/////////////////////////////////
-
-
-
 # 5.
 ##############################
 # Evaporation
@@ -281,7 +193,6 @@ var.eva<-brick(eva,varname="evap")
 #plot(var.eva[[1]]) # to take a quick look at the dataset
 # create the dataframe and exported csv
 NARR_dataprep(var.eva, dbo3)
-
 
 # 6.
 ##############################
@@ -334,3 +245,18 @@ winp
 var.wspd<-brick(win,varname="wspd")
 # create the dataframe and exported csv
 NARR_dataprep(var.wspd, dbo3)
+
+## NEXT STEPS
+# Fine tune the visuals I want (titles, etc.) and save to pngs to call in vignette
+# create one dataframe from my variable dataframes
+# Move onto xgboost
+
+#Note for xgboost:
+# zeros are considered mssing data in the matrix
+#so based on this convo
+# potential solutions is: https://github.com/dmlc/xgboost/issues/4601
+#"I 'd image if there are only a couple of non-missing zero values, one would be able to circumvent this behaviour by explicitly setting their values to 0.0 in the sparse matrix".
+# also see last bit of: https://arfer.net/w/xgboost-sparsity
+# or my book "We can also mark the values as a NaN and let the XGBoost framework treat the missing values as a distinct value for the feature."
+
+

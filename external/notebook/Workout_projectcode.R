@@ -379,3 +379,83 @@ districts %>% st_geometry %>% plot(add = TRUE)
 districts %>% st_centroid %>% st_coordinates %>%
   text(x = ., labels = row.names(.))
 ###############################@#@#@#@#@#@@#@@#!$#@$#@#@$#@$#@$@#$#@#$@$@#!$@!$#@
+
+
+################
+
+m <- 1:3
+var.ncl23<-subset(var.airT,m)
+#var.ncl23 <- var.nc1[m] #second way of doing the same thing
+ek <- dim((var.ncl23))#var.nc1)
+#mystack <- stack()
+time <- list()
+meanlcl <- list()
+var.nc1[2]
+
+for (i in 1:3){
+  r <- subset(var.ncl23,i)
+  print(i)
+  time <- append(time, names(r))
+  k <- cellStats(x = r, stat = "mean")
+  meanlcl <- append(meanlcl, k)
+}
+
+df <- do.call(rbind, Map(data.frame, Time=time, LowCloud=meanlcl))
+df$Year.month.day <-  substr(df$Time,2,11)
+
+
+
+
+# The original loop
+ek <- dim(var.airT)
+time <- list()
+meanlcl <- list()
+
+for (i in 1:ek[3]){
+  r <- subset(var.ncl23,i) %>%
+    projectRaster(crs = crs(var.sictif))  %>%
+    crop(y = dbo3) %>%
+    #resample(y = chldbo3varlay1)
+    print(i)
+  time <- append(time, names(r))
+  k <- cellStats(x = r, stat = "mean")
+  meanlcl <- append(meanlcl, k)
+}
+
+lcl_df <- do.call(rbind, Map(data.frame, Time=time, LowCloud=meanlcl))
+lcl_df$Year.month.day <-  substr(lcl_df$Time,2,11)
+write.table(lcl_df , file = "/Users/claregaffey/Documents/RClass/prepped_lcdc.csv")
+
+dim(var.test)
+rm(var.test)
+
+
+
+#///////////\\\\\\\\\\\/\/\/\/\
+m <- 1 #which time slice do we want to view (can use this to create a LOOP later) 1-504
+#subset extracts a single layer from the raster brick
+tmp_slice_r<-subset(var.nc1,m)
+dim(tmp_slice_r)
+plot(tmp_slice_r)
+plot(var.nc1[[2]])
+
+#///////////////////////////////////
+pat <- seq(as.Date("1979/1/1"), by = "month", length.out = 504)
+#create color palettes:
+temp.palette <- rev(colorRampPalette(c("darkred","red","orange",
+                                       "lightyellow","white","azure",
+                                       "cyan","blue","darkblue"))(100))
+
+TIME <- as.POSIXct(substr(var.nc1@data@names, start=2, stop=20), format="%Y.%m.%d")
+
+#Create a title for plot: take TIME[m] string and how many characters from the left to keep in title? 7 or 10
+ttl <- paste("Low cloud cover","_", substr(TIME[m], 1, 7),sep="")
+
+#test it
+spplot(tmp_slice_r,  main = ttl, col.regions=temp.palette)
+
+tmp_slice_dm <- data.matrix(var.nc1)
+
+test1 <- ts(data = var.nc1, start = 1, end = 504, frequency = 1, names = pat)
+#/////////////////////////////////
+
