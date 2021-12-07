@@ -48,6 +48,14 @@ cellStats(x = sicrop, stat = "mean")
 #^^^^^^^^^^^^^^^^^^^^^^^
 
 #Need SIC Loop
+mystack <- stack()
+files <- list.files(path="/Volumes/My Passport/RProject2021/SeaIce_MonthlySB2/",
+                    pattern="*.rst", full.names=TRUE, recursive=FALSE)
+lapply(files, function(x) {
+  sicbrick <- brick(x) # create a raster brick
+  mystack <- stack(mystack, sicbrick) #stack all of the bricks
+})
+var.sic <- brick(mystack) # create a brick from the stack
 
 
 
@@ -94,20 +102,23 @@ NARR_dataprep <- function(NARR_brick, ROI) {
   ek <- dim(NARR_brick)
   time <- list()
   meanlcl <- list()
+  counter <- 0
   for (i in 1:ek[3]){
-    r <- subset(NARR_brick,i) %>%
+    r <- subset(NARR_brick,i) %>% # running each time slice (works best)
       projectRaster(crs = crs(var.sictif))  %>% #will not work with EPSG#
-      crop(y = ROI) %>% # crop to the DBO3 extent
-      resample(y = chldbo3varlay1) # Resamples to the chlorophyll pixel extents
-    print(i) # keeps track of which layer we are on in the console
+      crop(y = ROI) #%>% # crop to the DBO3 extent
+      #resample(y = chldbo3varlay1) # Resamples to the chlorophyll pixel extents
+    counter <-  counter + 1 # keep track of which layer we are on in the console
+    print(paste0(counter, " out of ", ek[3]))
     time <- append(time, names(r)) # add raster name to a list
     k <- cellStats(x = r, stat = "mean") # calculate a mean over ROI
     meanlcl <- append(meanlcl, k) # add averaged variable to a list
   }
   # make a dataframe with the raster name (time) and averaged variable lists
-  df <- do.call(rbind, Map(data.frame, Time=time, LowCloud=meanlcl))
-  df$Year.month.day <-  substr(df$Time,2,11) # new column for date info
   nam <- paste0(deparse(substitute(NARR_brick)), ".csv") # for file naming
+  df <- do.call(rbind, Map(data.frame, Time=time, Variable=meanlcl))
+  names(df)[names(df) == 'Variable'] <- nam #rename var column to match header
+  df$Year.month.day <-  substr(df$Time,2,11) # new column for date info
   # export to a csv
   write.csv(df, file = paste("/Users/claregaffey/Documents/RClass/", nam),
             row.names = FALSE)#here::here(paste("external/data/", nam)))
@@ -157,10 +168,10 @@ NARR_dataprep(var.nc1, dbo3)
 ################
 
 m <- 1:3
-var.ncl23<-subset(var.nc1,m)
+var.ncl23<-subset(var.airT,m)
 #var.ncl23 <- var.nc1[m] #second way of doing the same thing
-ek <- dim((var.ncl22))#var.nc1)
-mystack <- stack()
+ek <- dim((var.ncl23))#var.nc1)
+#mystack <- stack()
 time <- list()
 meanlcl <- list()
 var.nc1[2]
@@ -180,7 +191,7 @@ df$Year.month.day <-  substr(df$Time,2,11)
 
 
 # The original loop
-ek <- dim(var.ncl23)
+ek <- dim(var.airT)
 time <- list()
 meanlcl <- list()
 
@@ -188,7 +199,7 @@ for (i in 1:ek[3]){
   r <- subset(var.ncl23,i) %>%
   projectRaster(crs = crs(var.sictif))  %>%
   crop(y = dbo3) %>%
-  resample(y = chldbo3varlay1)
+  #resample(y = chldbo3varlay1)
   print(i)
   time <- append(time, names(r))
   k <- cellStats(x = r, stat = "mean")
@@ -282,7 +293,6 @@ atemp <- nc_open(atem)
 atemp
 # create raster brick
 var.airT<-brick(atem,varname="air")
-#plot(var.eva[[1]]) # to take a quick look at the dataset
 # create the dataframe and exported csv
 NARR_dataprep(var.airT, dbo3)
 
@@ -296,7 +306,6 @@ tropo <- nc_open(gph)
 tropo
 # create raster brick
 var.hgt<-brick(gph,varname="hgt")
-#plot(var.eva[[1]]) # to take a quick look at the dataset
 # create the dataframe and exported csv
 NARR_dataprep(var.hgt, dbo3)
 
