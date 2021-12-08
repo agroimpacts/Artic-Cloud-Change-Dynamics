@@ -5,7 +5,7 @@ output: ioslides_presentation
 
 ```{r, eval = FALSE}
 setwd(dir = "vignettes/slides")
-rmarkdown::render(input = "myslides.Rmd", output_file = "myslides.html")
+rmarkdown::render(input = "Presentation.Rmd", output_file = "Presentation.html")
 # This is to make the html output appear in the folder where you want it.
 ```
 
