@@ -14,10 +14,10 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## Outline:
-- Introduction (1-3 slides)
-- Data and Methods (2-4 slides)
-- Results (2-4 slides)
-- Future work (1-3 slides)
+- Introduction (1-3 slides) (Serina, Clare (regression), Aandishah (editor))
+- Data and Methods (2-4 slides) Data(1) Methods (Aandhsish (1-2 + energy budget), Clare (1-2))
+- Results (2-4 slides) (Aandishah (2-3), Clare (1-2))
+- Future work (1-3 slides) (Detrending?)
 
 
 ## Slide with R Output
