@@ -1,5 +1,6 @@
 ---
 title: "Arctic Cloud Dynamics"
+authors: Aandishah Tehzeeb Samara, Serina Khalifa, Clare Gaffey
 output: ioslides_presentation
 ---
 
@@ -31,4 +32,15 @@ summary(cars)
 ```{r pressure}
 plot(pressure)
 ```
+cloud cover at three altitude levels (low, medium, and high). These datasets will be downloaded as NetCDFs from NARR and will include auxiliary datasets for the regression model. The additional NARR auxiliary variables include wind speed at 10m, air temperature, evaporation, geopotential height, and relative humidity. The NARR datasets are available from 1979-2021. Additional datasets used will be monthly MODIS (2002-2021) chlorophyll-a concentrations and monthly composited SB2 sea ice concentration available from 1978-2020. 
 
+## Data:
+- NARR Reanalysis:
+  - Cloud cover at three altitude levels (low, medium, and high)
+  - Wind speed at 10 m
+  - Air temperature
+  - Evaporation
+  - Geopotential height
+  - Relative humidity
+- NASA MODIS-Aqua chlorophyll concentration
+- DoD SSMI/S sea ice concentration
