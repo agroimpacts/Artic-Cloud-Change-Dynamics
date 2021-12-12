@@ -1,0 +1,34 @@
+---
+title: "Arctic Cloud Dynamics"
+output: ioslides_presentation
+---
+
+```{r, eval = FALSE}
+setwd(dir = "vignettes/slides")
+rmarkdown::render(input = "Presentation.Rmd", output_file = "Presentation.html")
+# This is to make the html output appear in the folder where you want it.
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Outline:
+- Introduction (1-3 slides) (Serina, Clare (regression), Aandishah (editor))
+- Data and Methods (2-4 slides) Data(1) Methods (Aandhsish (1-2 + energy budget), Clare (1-2))
+- Results (2-4 slides) (Aandishah (2-3), Clare (1-2))
+- Future work (1-3 slides) (Detrending?)
+
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+

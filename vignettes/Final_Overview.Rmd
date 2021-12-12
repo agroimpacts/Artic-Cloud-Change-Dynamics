@@ -1,0 +1,31 @@
+---
+title: "Final Overview"
+output: rmarkdown::html_vignette
+authors: Aandishah Tehzeeb Samara, Serina Khalifa, Clare Gaffey
+date: "2021-11-10"
+vignette: >
+  %\VignetteIndexEntry{overview}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Introduction (or Overview) --Serina
+A more detailed and informative overview of the project's purpose and objectives than what your provided in assignment 6. Approximate maximum length of 400 (individual) to 800 (team, assuming a single package vignette) words.  
+
+#### Methods (or Approach) -all
+For a more analytical project, provide a complete description of the methods you used to undertake the analysis, complete with informative illustrations and summaries of the input datasets. Approximate maximum length of 400 (individual) to 800 words. 
+For a project that is more tools-oriented, use this section to describe the purpose and rationale of the functions/capabilities you are developing, what other packages/software/tools it is building on, and provide informative illustrations and summaries of the dataset(s) you are using to demonstrate your functions. Same approximate length. 
+
+#### Results (Worked Examples) --all
+For analytical projects, describe and illustrate your results, using standard scientific reporting conventions: 1) plan on having 2-4 figures; 2) a similar number of statistical summaries; 3) describe the results in your figures and tables in (up to) 400-800 words (range refers to individual versus team efforts). 
+For tools-oriented projects, provide and illustrate 2-4 worked examples of how to use the functions in your package, with descriptive accompanying text that will help users to understand what the functions do and how to apply them (up to 400-800 words; range refers to individual versus team efforts). 
+
+#### Discussion --all
+For analytical projects, briefly provide your interpretation of the results, any uncertainties/difficulties encountered, and any next steps to be taken. Up to 400-800 words (range refers to individual versus team efforts).
+For tools-oriented projects, describe any limitations of the package, improvements that can be made, and any plans to undertake these. Up to 400-800 words (range refers to individual versus team efforts).  

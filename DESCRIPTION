@@ -1,13 +1,15 @@
-Package: asc346
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Package: Arctic-Cloud-Change-Dynamics
+Title: Arctic Cloud Change Dynamics
+Version: 0.0.1.0000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person(given = "Clare",
+           family = "Gaffey")
+    person(given = "Aandishah",
+          family = "Samara"),
+    person(given = "Serina",
+            family = "Khalifa")
+Description: Analyzes trends of cloud cover in the Pacific Arctic and runs a gradient 
+boosted model to find drivers of low cloud cover.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
