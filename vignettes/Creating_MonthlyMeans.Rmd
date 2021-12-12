@@ -1,0 +1,96 @@
+---
+title: "Creating_MonthlyMeans"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating_MonthlyMeans}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+```{r setup}
+library(ncdf4)
+library(chron)
+library(raster)
+library(lattice)
+library(RColorBrewer)
+library(ggplot2)
+library(maptools) 
+library(maps) 
+library("latticeExtra")
+library(here)
+```
+```{r Setting up}
+ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_346/Final_Project/Datasets/" #Change to local Directory
+#out_folder = "C:/Users/aandi/Desktop/Fall_2021/GEOG_346/Final_Project/Datasets/hcdc_reanalysis_"
+#dir.create(out_folder)
+ncpath <- ppath
+
+#High Cloud Area Fraction
+ncname1 <- "hcdc.mon.mean"
+ncfname1 <- paste(ncpath, ncname1, ".nc", sep="")
+dname1 <- "hcdc"
+
+# open a netCDF file
+ncin1 <- nc_open(ncfname1)
+
+#grab time slice from raster brick instead of array:
+var.nc1<-brick(ncfname1,varname=dname1)
+
+```
+```{r Mapping Annual Breakdown of North American Region for HCDC in 1979}
+#plot(var.nc1[[1:12]], main = "Monthly High Cloud Area Fraction in 1979") 
+#plot(var.nc1[[1]]) #Alternative Method of Mpping First Month
+```
+```{r Mapping Singular Monthly Output of HDCD}
+m <- 1 #1 Outputs first month of time series, 513 outputs last month, is going to used for loop
+#subset extracts a single layer from the raster brick
+hcdc_slice_r<-subset(var.nc1,m)
+dim(hcdc_slice_r)
+plot(hcdc_slice_r)
+
+#create color palettes:
+temp.palette <- rev(colorRampPalette(c("darkred","red","orange",
+                                       "lightyellow","white","azure",
+                                       "cyan","blue","darkblue"))(100))
+
+TIME <- as.POSIXct(substr(var.nc1@data@names, start=2, stop=20), format="%Y.%m.%d")
+
+#Create a title for plot: take TIME[m] string and how many characters from the left to keep in title? 7 or 10
+ttl <- paste(dname1, " ", substr(TIME[m], 1, 7), sep="")
+
+#Pot the Map
+spplot(hcdc_slice_r,  main = ttl, col.regions=temp.palette)
+
+# Output the data as a GeoTiff/ Raster (Compatible with TerrSet)
+writeRaster(hcdc_slice_r, ttl, "IDRISI", overwrite=TRUE)
+writeRaster(hcdc_slice_r, ttl, "GTiff", overwrite=TRUE)
+```
+```{r}
+coords <- cbind("x" = c(-180, -152, -152, -180, -180),
+                "y" = c(75, 75, 50, 50, 75))
+pol <- st_polygon(x = list(coords)) %>% st_sfc %>% st_sf(ID = 1, crs = 4326)
+plot(pol)
+pol
+```
+
+```{r Cropping to new extent}
+#Region of Interest
+ROI <- extent(-16231.49, 11313351, -16231.5, 8976020) #xmin, xmax (180+80), ymin, ymax
+ROI
+plot(ROI)
+hcdc_slice_r.crop <- crop(hcdc_slice_r, ROI)
+plot(hcdc_slice_r.crop, main = 'Cropped Data')
+```
+```{r}
+seq(as.Date("1979/1/1"), by = "month", length.out = 513)
+```
+
+
+
