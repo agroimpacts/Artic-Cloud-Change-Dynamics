@@ -159,7 +159,7 @@ ntrees <- elog %>%
 # Run xgboost
 lcc_xgb <- xgboost(data = as.matrix(X), # training data as matrix
                           label = Y,  # column of outcomes
-                          nrounds = ntrees,       # number of trees to build
+                          nrounds = 23, # number of trees to build (ntrees output)
                           objective = "reg:linear", # objective
                           eta = 0.3,
                           depth = 6,
@@ -167,31 +167,22 @@ lcc_xgb <- xgboost(data = as.matrix(X), # training data as matrix
 )
 
 # Make predictions-xgb
-csv$pred <- predict(lcc_xgb, as.matrix(X))
+csv$prediction <- predict(lcc_xgb, as.matrix(X))
 
 # Plot predictions (on x axis) vs actual
-ggplot(csv, aes(x = pred, y = LowCloud)) +
+ggplot(csv, aes(x = prediction, y = LowCloud)) +
   geom_point() +
   geom_abline()
 
-#Evaluate the xgboost model
+## Accuracy assessment
 
-# Calculate RMSE
+# Calculate Mean absolute error
 csv %>%
-  mutate(residuals = LowCloud - pred) %>%
-  summarize(rmse = sqrt(mean(residuals^2)))
+  mutate(residuals = LowCloud - prediction) %>%
+  summarize(MAE = (mean(residuals)))
 
-
-# This doesn't fit to my data yet:
-# Plot predictions and actual bike rentals as a function of time (days)
+# Calculate Root mean square error
 csv %>%
-  mutate(instant = (instant - min(instant))/24) %>%  # set start to 0, convert unit to days
-  gather(key = valuetype, value = value, cnt, pred) %>%
-  filter(instant < 14) %>% # first two weeks
-  ggplot(aes(x = instant, y = value, color = valuetype, linetype = valuetype)) +
-  geom_point() +
-  geom_line() +
-  scale_x_continuous("Day", breaks = 0:14, labels = 0:14) +
-  scale_color_brewer(palette = "Dark2") +
-  ggtitle("Predicted August bike rentals, Gradient Boosting model")
+  mutate(residuals = LowCloud - prediction) %>%
+  summarize(RMSE = sqrt(mean(residuals^2)))
 
