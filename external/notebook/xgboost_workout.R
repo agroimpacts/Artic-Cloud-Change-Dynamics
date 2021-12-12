@@ -20,6 +20,16 @@ eta: the learning rate.
 max_depth: depth of trees.
 early_stopping_rounds: after this many rounds without improvement, stop.
 verbose: 0 to stay silent.
+#Note for xgboost:
+# zeros are considered mssing data in the matrix
+#so based on this convo
+# potential solutions is: https://github.com/dmlc/xgboost/issues/4601
+#"I 'd image if there are only a couple of non-missing zero values, one would be able to circumvent this behaviour by explicitly setting their values to 0.0 in the sparse matrix".
+# also see last bit of: https://arfer.net/w/xgboost-sparsity
+# or my book "We can also mark the values as a NaN and let the XGBoost framework treat the missing values as a distinct value for the feature."
+
+
+
 
 # Load the package xgboost
 library(xgboost)
@@ -159,7 +169,7 @@ lcc_xgb <- xgboost(data = as.matrix(X), # training data as matrix
 # Make predictions-xgb
 csv$pred <- predict(lcc_xgb, as.matrix(X))
 
-# Plot predictions (on x axis) vs actual bike rental count
+# Plot predictions (on x axis) vs actual
 ggplot(csv, aes(x = pred, y = LowCloud)) +
   geom_point() +
   geom_abline()
