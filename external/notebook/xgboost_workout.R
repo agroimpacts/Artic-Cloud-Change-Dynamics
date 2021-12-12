@@ -166,6 +166,8 @@ lcc_xgb <- xgboost(data = as.matrix(X), # training data as matrix
                           verbose = 0  # silent
 )
 
+lcc_xgb
+
 # Make predictions-xgb
 csv$prediction <- predict(lcc_xgb, as.matrix(X))
 
