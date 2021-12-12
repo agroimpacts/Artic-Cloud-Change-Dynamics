@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Outline:
 - Introduction (1-3 slides) (Serina, Clare (regression), Aandishah (editor))
-- Data and Methods (2-4 slides) Data(1) Methods (Aandhsish (1-2 + energy budget), Clare (1-2))
+- Data and Methods (2-4 slides) Methods (Aandhsish (1-2 + energy budget), 
 - Results (2-4 slides) (Aandishah (2-3), Clare (1-2))
 - Future work (1-3 slides) (Detrending?)
 
@@ -32,15 +32,28 @@ summary(cars)
 ```{r pressure}
 plot(pressure)
 ```
-cloud cover at three altitude levels (low, medium, and high). These datasets will be downloaded as NetCDFs from NARR and will include auxiliary datasets for the regression model. The additional NARR auxiliary variables include wind speed at 10m, air temperature, evaporation, geopotential height, and relative humidity. The NARR datasets are available from 1979-2021. Additional datasets used will be monthly MODIS (2002-2021) chlorophyll-a concentrations and monthly composited SB2 sea ice concentration available from 1978-2020. 
+
+## Introduction
 
 ## Data:
-- NARR Reanalysis:
+- NARR Reanalysis: (1979-2020)
   - Cloud cover at three altitude levels (low, medium, and high)
   - Wind speed at 10 m
   - Air temperature
   - Evaporation
   - Geopotential height
   - Relative humidity
-- NASA MODIS-Aqua chlorophyll concentration
-- DoD SSMI/S sea ice concentration
+- NASA MODIS-Aqua chlorophyll concentration (2002-2020)
+- DoD SSMI/S sea ice concentration (1979-2020)
+
+
+## Methods: Gradient Boosting Regression to find the drivers of low cloud cover concentration in the Chukchi Sea. {.smaller}
+1. Monthly composites were downloaded (external/data/Download_Datasets.R)
+2. Variables were converted to raster bricks, projected, cropped to the region
+    of interest, and monthly averages were saved to a dataframe and exported
+    to a csv to be combined into one master dataframe 
+    (R/Prepare_Rasters_for_Model.R) [and Aandishah's combine code]
+3. For running the gradient boosting model (XGBoost) the data were partitioned 
+    into training and testing, trained a model, and then used accuracy 
+    assessment to find the best number of trees for the final XGBoost model.
+
