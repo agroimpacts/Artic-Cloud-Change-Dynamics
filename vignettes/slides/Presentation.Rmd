@@ -1,5 +1,6 @@
 ---
 title: "Arctic Cloud Dynamics"
+authors: Aandishah Tehzeeb Samara, Serina Khalifa, Clare Gaffey
 output: ioslides_presentation
 ---
 
@@ -12,10 +13,14 @@ rmarkdown::render(input = "Presentation.Rmd", output_file = "Presentation.html")
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+```{r, echo=FALSE, results='hide', message=FALSE}
+library(here) # set up working directory
+here::here() # set working directory for images
 
+```
 ## Outline:
 - Introduction (1-3 slides) (Serina, Clare (regression), Aandishah (editor))
-- Data and Methods (2-4 slides) Data(1) Methods (Aandhsish (1-2 + energy budget), Clare (1-2))
+- Data and Methods (2-4 slides) Methods (Aandhsish (1-2 + energy budget), 
 - Results (2-4 slides) (Aandishah (2-3), Clare (1-2))
 - Future work (1-3 slides) (Detrending?)
 
@@ -31,4 +36,57 @@ summary(cars)
 ```{r pressure}
 plot(pressure)
 ```
+
+## Introduction
+
+Gradient Boosting is a machine learning technique used for regression and classification.
+Similar to random forest, it uses an ensemble of decision trees to learn how independent
+variables predict the dependent variable. Unlike random forest, trees are built upon
+through boosting, so trees are iteratively improved instead of averaged out by
+many individual trees. This package extracts information from several raster datasets
+and builds a gradient boosting model to determine the most important variables
+that influence low cloud cover concentration over the Chukchi Sea.
+
+## Data:
+- NARR Reanalysis: (1979-2020)
+  - Cloud cover at three altitude levels (low, medium, and high)
+  - Wind speed at 10 m
+  - Air temperature
+  - Evaporation
+  - Geopotential height
+  - Relative humidity
+- NASA MODIS-Aqua chlorophyll concentration (2002-2020)
+- DoD SSMI/S sea ice concentration (1979-2020)
+
+
+## Methods: Gradient Boosting Regression to find the drivers of low cloud cover concentration in the Chukchi Sea. {.smaller}
+1. Monthly composites were downloaded (external/data/Download_Datasets.R)
+2. Variables were converted to raster bricks, projected, cropped to the region
+    of interest, and monthly averages were saved to a dataframe and exported
+    to a csv to be combined into one master dataframe 
+    (R/Prepare_Rasters_for_Model.R, R/XGB_Variable_Merge.R)
+3. For running the gradient boosting model (XGBoost) the data were partitioned 
+    into training and testing, trained a model, and then used accuracy 
+    assessment to find the optimum number of trees used to tune the final 
+    XGBoost model.
+## 
+```{r, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/SeaIceMap.png"))
+knitr::include_graphics(here("images/SIC_DBO3.png"))
+knitr::include_graphics(here("images/LCC_DBO3.png"))
+```
+
+## Results
+```{r, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("XGB_LCC_vs_predicted_testset.png"))
+```
+## Results
+```{r, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/XGB_VariableImportance.png"))
+```
+
+
+## Future Work:
+- Detrending
+- Improve model accuracy
 

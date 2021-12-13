@@ -66,7 +66,7 @@ cellStats(x = sicrop, stat = "mean")
 #^^^^^^^^^^^^^^^^^^^^^^^
 # Bring in all of the sea ice time series data
 mystack <- stack()
-files <- list.files(path="/external/data/SeaIce_MonthlySB2_YOUR_SEA_ICE_FOLDER",
+files <- list.files(path="external/data/SeaIce_MonthlySB2_YOUR_SEA_ICE_FOLDER",
                     pattern="*.rst", full.names=TRUE, recursive=FALSE)
 for (x in files) {
   sicbrick <- brick(x) # create a raster brick
@@ -145,7 +145,7 @@ CHL_dataprep <- function(NARR_brick, ROI) {
   df$Year.julianday <- paste0(substr(files, 53, 56), "_",
                               substr(files, 57, 59))
   # export to a csv
-  write.csv(df, file = paste("/external/data/", nam),
+  write.csv(df, file = paste("external/data/", nam),
             row.names = FALSE)#here::here(paste("external/data/", nam)))
   return(head(df)) # display some rows of our dataframe
 }
@@ -181,7 +181,7 @@ NARR_dataprep <- function(NARR_brick, ROI) {
   names(df)[names(df) == 'Variable'] <- substr(nam,5,8) #rename var column
   df$Year.month.day <-  substr(df$Time,2,11) # new column for date info
   # export to a csv
-  write.csv(df, file = paste("/external/data/", nam),
+  write.csv(df, file = paste("external/data/", nam),
             row.names = FALSE)#here::here(paste("external/data/", nam)))
   return(head(df)) # display some rows of our dataframe
 }
@@ -201,7 +201,7 @@ NARR_dataprep(var.sic, dbo3)
 # 4.
 #####################
 # Cloud data example
-lcl <- "/external/data/lcdc.mon.mean.nc"
+lcl <- "external/data/lcdc.mon.mean.nc"
 lcdc <- nc_open(lcl)
 #check out the netcdf contents
 lcdc
@@ -243,7 +243,7 @@ NARR_dataprep(var.nc1, dbo3)
 ##############################
 # Evaporation
 
-eva <- "/external/data/evap.mon.mean.nc"
+eva <- "external/data/evap.mon.mean.nc"
 evap <- nc_open(eva)
 #check out the netcdf contents
 evap
@@ -257,7 +257,7 @@ NARR_dataprep(var.eva, dbo3)
 ##############################
 # Air temperature
 
-atem <- "/external/data/air.sfc.mon.mean.nc"
+atem <- "external/data/air.sfc.mon.mean.nc"
 atemp <- nc_open(atem)
 #check out the netcdf contents
 atemp
@@ -270,7 +270,7 @@ NARR_dataprep(var.airT, dbo3)
 ##############################
 # Geopotential height
 
-gph <- "/external/data/hgt.tropo.mon.mean.nc"
+gph <- "external/data/hgt.tropo.mon.mean.nc"
 tropo <- nc_open(gph)
 #check out the netcdf contents
 tropo
@@ -283,7 +283,7 @@ NARR_dataprep(var.hgt, dbo3)
 ##############################
 # Relative humidity
 
-rhu <- "/external/data/rhum.2m.mon.mean.nc"
+rhu <- "external/data/rhum.2m.mon.mean.nc"
 rhum <- nc_open(rhu)
 #check out the netcdf contents
 rhum
@@ -296,7 +296,7 @@ NARR_dataprep(var.rhum, dbo3)
 ##############################
 # Wind speed at 10m
 
-win <- "/external/data/wspd.10m.mon.mean.nc"
+win <- "external/data/wspd.10m.mon.mean.nc"
 winp <- nc_open(win)
 #check out the netcdf contents
 winp
