@@ -38,10 +38,12 @@ sicrop <- crop(x = var.sictif, y = dbo3)
 # Visualize the entire file and the ROI
 ggplot() +
   layer_spatial(var.sictif, aes(fill = stat(band1))) +
-  scale_fill_continuous(na.value = NA) + layer_spatial(dbo3)
+  scale_fill_continuous(na.value = NA) + layer_spatial(dbo3) +
+  ggtitle("Sea Ice Concentration") + labs(fill = "SIC (%)")
 # The cropped sea ice concentration to DBO3
 ggplot() +
-  layer_spatial(sicrop)
+  layer_spatial(sicrop) +
+  ggtitle("Sea Ice Concentration of DBO3 (Chukchi Sea)") + labs(fill = "SIC (%)")
 # Calculate the mean of DBO3 sea ice concentration for DBO3 on our sample date
 cellStats(x = sicrop, stat = "mean")
 #^^^^^^^^^^^^^^^^^^^^^^^
@@ -165,10 +167,14 @@ clodbo3varlay1 <- crop(x = lay1_clo, y = dbo3)
 ggplot() +
   layer_spatial(lay1_clo, aes(fill = stat(band1))) +
   scale_fill_continuous(na.value = NA) +
-  layer_spatial(dbo3)
+  layer_spatial(dbo3) +
+  ggtitle("NARR Low Cloud Concentration for North America") +
+  labs(fill = "CC (%)")
 # The cropped DBO3 ROI of our cloud layer
 ggplot() +
-  layer_spatial(clodbo3varlay1)
+  layer_spatial(clodbo3varlay1) +
+  ggtitle("Low Cloud Concentration of DBO3 (Chukchi Sea)") +
+  labs(fill = "CC (%)")
 ## Resample to match pixels of chlorophyll raster
 cloudresampled <- resample(x = clodbo3varlay1, y = chldbo3varlay1)
 #view the resampled image

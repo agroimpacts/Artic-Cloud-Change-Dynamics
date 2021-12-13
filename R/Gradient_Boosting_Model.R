@@ -6,7 +6,8 @@ if (!("xgboost" %in% installed.packages())) {
 library(xgboost)
 library(dplyr)
 library(ggplot2)
-csv <- read.csv("/Users/claregaffey/Documents/RClass/test_xgbdata.csv")
+# Bring in the combined csv from the NARR_Variable_Merge.R
+csv <- read.csv("/Users/claregaffey/Documents/RClass/test_xgbdata.csv") #here::here(paste("external/data/"
 class(csv)
 head(csv)
 
