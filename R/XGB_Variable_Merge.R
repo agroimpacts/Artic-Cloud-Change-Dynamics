@@ -53,6 +53,5 @@ columns <- c('Year.x', 'Month.x', 'Year_month', 'airT', 'evap', 'rhum', 'wspd', 
              'chla', 'var.sic', 'LowCloud')
 New <- Alldata[, columns, with=FALSE]
 
-# write it out to a csv
+# write out all time-aligned variables to a csv
 fwrite(New, "ArcticDynamicsVariables.csv")
-
