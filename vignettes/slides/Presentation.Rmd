@@ -56,4 +56,9 @@ plot(pressure)
 3. For running the gradient boosting model (XGBoost) the data were partitioned 
     into training and testing, trained a model, and then used accuracy 
     assessment to find the best number of trees for the final XGBoost model.
-
+## 
+```{r, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/SeaIceMap.png"))
+knitr::include_graphics(here("images/SIC_DBO3.png"))
+knitr::include_graphics(here("images/LCC_DBO3.png"))
+```
