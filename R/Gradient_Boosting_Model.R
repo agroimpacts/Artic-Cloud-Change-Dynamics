@@ -9,7 +9,7 @@ library(ggplot2)
 library(here)
 here::here()
 # Bring in the combined csv from the NARR_Variable_Merge.R
-csv <- read.csv(here::here("/external/data/ArcticDynamicsVariables.csv"))
+csv <- read.csv(here("external/data/ArcticDynamicsVariables.csv"))
 class(csv)
 head(csv)
 # drop the columns without variables.
