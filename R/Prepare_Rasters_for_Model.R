@@ -12,23 +12,40 @@
 # F. Write data to a format suitable for input to XGBoost
 
 # Load in libraries
+if (!("rlist" %in% installed.packages())) {
+  install.packages("rlist")
+  # auto install some packages that might not be common
+}
+if (!("ggspatial" %in% installed.packages())) {
+  install.packages("ggspatial")
+}
+if (!("ncdf4" %in% installed.packages())) {
+  install.packages("ncdf4")
+}
+if (!("rgdal" %in% installed.packages())) {
+  install.packages("rgdal")
+}
+library(rlist)
 library(sp)
 library(tidyverse)
 library(sf)
 library(ncdf4)
 library(raster)
 library(rgdal)
-library(ggspatial) #Requires ggplot2
+library(ggspatial)
+library(here) # set up working directory
+here::here() # set working directory for images
 
 # 1.
 # DBO3 Shapefile for ROI
-dbo3 <- "/Users/claregaffey/OneDrive - Clark University/R_Project/DBO3_shapefile/Dbo3.shp" %>%
-  st_read()
+# plug in where you saved it from Download_datasets.R and remove the comment
+dbo3 <- here::here("external/data/YOURFILEHERE.png") %>% st_read()
 
 # 2.
 ##############################
 # Sea Ice Concentration example
-si <- "/Volumes/My Passport/RProject2021/SeaIce_MonthlySB2/SB2_1978_12_month.rst"
+# plus in the path to one of the sea ice .rst files
+si <- here::here("external/data/SB2_1978_12_month.rst")
 # create raster brick
 var.sictif <- brick(si)#varname="chlor_a")
 #project
@@ -49,7 +66,7 @@ cellStats(x = sicrop, stat = "mean")
 #^^^^^^^^^^^^^^^^^^^^^^^
 # Bring in all of the sea ice time series data
 mystack <- stack()
-files <- list.files(path="/Volumes/My Passport/RProject2021/SeaIce_MonthlySB2/",
+files <- list.files(path="/external/data/SeaIce_MonthlySB2_YOUR_SEA_ICE_FOLDER",
                     pattern="*.rst", full.names=TRUE, recursive=FALSE)
 for (x in files) {
   sicbrick <- brick(x) # create a raster brick
@@ -65,8 +82,9 @@ var.sic <- brick(mystack) # create a brick from the stack
 # This code loads in chl netcdf, converts to a raster object, reprojects it to
 # match the other files(SIC, DBO3 bounding box ROI), crops it to the DBO3 ROI,
 # and visualizes the data.
-## Clean version of chla:
-chl <- "/Volumes/My Passport/RProject2021/MODIS_chl/A20031822003212.L3m_MO_CHL.x_chlor_a.nc"
+
+# plus in the path to one of the chlorophyll nc files
+chl <- here::here("external/data/A20031822003212.L3m_MO_CHL.x_chlor_a.nc")
 chla <- nc_open(chl)
 #check out the netcdf contents
 chla
@@ -89,7 +107,7 @@ ggplot() +
 #^^^^^^^^^^^^^^^^^^^^^^^
 # Bring in all of the chlorophyll time series data
 mystack <- stack()
-files <- list.files(path="/Volumes/My Passport/RProject2021/MODIS_chl/",
+files <- list.files(path="external/data/YOUR_CHLOROPHYLL_FOLDER",
                     pattern="*.nc", full.names=TRUE, recursive=FALSE)
 for (x in files) {
   chlbrick <- brick(x, varname="chlor_a") # create a raster brick
@@ -97,6 +115,42 @@ for (x in files) {
 }
 var.chla <- brick(mystack) # create a brick from the stack
 
+substr(files,53,59) # checking out the dates of the files
+pat <- seq(1:11) #chlorophyll has 11 months of data per year
+paste0(substr(list.skip(files, 4),53,56), "_", pat)
+#for checking the dates during the data merge
+# (skipping the first incomplete year)
+
+# Modified function to accomodate the chlorophyll file dates
+CHL_dataprep <- function(NARR_brick, ROI) {
+  ek <- dim(NARR_brick)
+  time <- list()
+  meanlcl <- list()
+  counter <- 0
+  for (i in 1:ek[3]){
+    r <- subset(NARR_brick,i) %>% # running each time slice (works best)
+      projectRaster(crs = crs(var.sictif))  %>% #will not work with EPSG#
+      crop(y = ROI) #%>% # crop to the DBO3 extent
+    #resample(y = chldbo3varlay1) # Resamples to the chlorophyll pixel extents
+    counter <-  counter + 1 # keep track of which layer we are on in the console
+    print(paste0(counter, " out of ", ek[3]))
+    time <- append(time, names(r)) # add raster name to a list
+    k <- cellStats(x = r, stat = "mean") # calculate a mean over ROI
+    meanlcl <- append(meanlcl, k) # add averaged variable to a list
+  }
+  # make a dataframe with the raster name (time) and averaged variable lists
+  nam <- paste0(deparse(substitute(NARR_brick)), ".csv") # for file naming
+  df <- do.call(rbind, Map(data.frame, Time=time, Variable=meanlcl))
+  names(df)[names(df) == 'Variable'] <- substr(nam,5,8) #rename var column
+  df$Year.julianday <- paste0(substr(files, 53, 56), "_",
+                              substr(files, 57, 59))
+  # export to a csv
+  write.csv(df, file = paste("/external/data/", nam),
+            row.names = FALSE)#here::here(paste("external/data/", nam)))
+  return(head(df)) # display some rows of our dataframe
+}
+# Run for all chlorophyll data
+CHL_dataprep(var.chla, dbo3)
 
 
 ##########################
@@ -114,7 +168,7 @@ NARR_dataprep <- function(NARR_brick, ROI) {
     r <- subset(NARR_brick,i) %>% # running each time slice (works best)
       projectRaster(crs = crs(var.sictif))  %>% #will not work with EPSG#
       crop(y = ROI) #%>% # crop to the DBO3 extent
-      #resample(y = chldbo3varlay1) # Resamples to the chlorophyll pixel extents
+    #resample(y = chldbo3varlay1) # Resamples to the chlorophyll pixel extents
     counter <-  counter + 1 # keep track of which layer we are on in the console
     print(paste0(counter, " out of ", ek[3]))
     time <- append(time, names(r)) # add raster name to a list
@@ -127,7 +181,7 @@ NARR_dataprep <- function(NARR_brick, ROI) {
   names(df)[names(df) == 'Variable'] <- substr(nam,5,8) #rename var column
   df$Year.month.day <-  substr(df$Time,2,11) # new column for date info
   # export to a csv
-  write.csv(df, file = paste("/Users/claregaffey/Documents/RClass/", nam),
+  write.csv(df, file = paste("/external/data/", nam),
             row.names = FALSE)#here::here(paste("external/data/", nam)))
   return(head(df)) # display some rows of our dataframe
 }
@@ -135,8 +189,7 @@ NARR_dataprep <- function(NARR_brick, ROI) {
 # Run for all sea ice data
 NARR_dataprep(var.sic, dbo3)
 
-# Run for all chlorophyll data
-NARR_dataprep(var.chla, dbo3)
+
 
 
 ##########################
@@ -148,7 +201,7 @@ NARR_dataprep(var.chla, dbo3)
 # 4.
 #####################
 # Cloud data example
-lcl <- "/Volumes/My Passport/RProject2021/lcdc.mon.mean.nc" #Users/claregaffey/Downloads/lcdc.mon.mean.nc"#/
+lcl <- "/external/data/lcdc.mon.mean.nc"
 lcdc <- nc_open(lcl)
 #check out the netcdf contents
 lcdc
@@ -190,7 +243,7 @@ NARR_dataprep(var.nc1, dbo3)
 ##############################
 # Evaporation
 
-eva <- "/Volumes/My Passport/RProject2021/evap.mon.mean.nc"
+eva <- "/external/data/evap.mon.mean.nc"
 evap <- nc_open(eva)
 #check out the netcdf contents
 evap
@@ -204,7 +257,7 @@ NARR_dataprep(var.eva, dbo3)
 ##############################
 # Air temperature
 
-atem <- "/Volumes/My Passport/RProject2021/air.sfc.mon.mean.nc"
+atem <- "/external/data/air.sfc.mon.mean.nc"
 atemp <- nc_open(atem)
 #check out the netcdf contents
 atemp
@@ -217,7 +270,7 @@ NARR_dataprep(var.airT, dbo3)
 ##############################
 # Geopotential height
 
-gph <- "/Volumes/My Passport/RProject2021/hgt.tropo.mon.mean.nc"
+gph <- "/external/data/hgt.tropo.mon.mean.nc"
 tropo <- nc_open(gph)
 #check out the netcdf contents
 tropo
@@ -230,7 +283,7 @@ NARR_dataprep(var.hgt, dbo3)
 ##############################
 # Relative humidity
 
-rhu <- "/Volumes/My Passport/RProject2021/rhum.2m.mon.mean.nc"
+rhu <- "/external/data/rhum.2m.mon.mean.nc"
 rhum <- nc_open(rhu)
 #check out the netcdf contents
 rhum
@@ -243,7 +296,7 @@ NARR_dataprep(var.rhum, dbo3)
 ##############################
 # Wind speed at 10m
 
-win <- "/Volumes/My Passport/RProject2021/wspd.10m.mon.mean.nc"
+win <- "/external/data/wspd.10m.mon.mean.nc"
 winp <- nc_open(win)
 #check out the netcdf contents
 winp
@@ -251,18 +304,3 @@ winp
 var.wspd<-brick(win,varname="wspd")
 # create the dataframe and exported csv
 NARR_dataprep(var.wspd, dbo3)
-
-## NEXT STEPS
-# Fine tune the visuals I want (titles, etc.) and save to pngs to call in vignette
-# create one dataframe from my variable dataframes
-# Move onto xgboost
-
-#Note for xgboost:
-# zeros are considered mssing data in the matrix
-#so based on this convo
-# potential solutions is: https://github.com/dmlc/xgboost/issues/4601
-#"I 'd image if there are only a couple of non-missing zero values, one would be able to circumvent this behaviour by explicitly setting their values to 0.0 in the sparse matrix".
-# also see last bit of: https://arfer.net/w/xgboost-sparsity
-# or my book "We can also mark the values as a NaN and let the XGBoost framework treat the missing values as a distinct value for the feature."
-
-

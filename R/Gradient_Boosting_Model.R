@@ -6,11 +6,14 @@ if (!("xgboost" %in% installed.packages())) {
 library(xgboost)
 library(dplyr)
 library(ggplot2)
+library(here)
+here::here()
 # Bring in the combined csv from the NARR_Variable_Merge.R
-csv <- read.csv("/Users/claregaffey/Documents/RClass/test_xgbdata.csv") #here::here(paste("external/data/"
+csv <- read.csv(here::here("/external/data/ArcticDynamicsVariables.csv"))
 class(csv)
 head(csv)
-
+# drop the columns without variables.
+csv <- subset(csv, select = -c(Year.x, Month.x, Year_month))
 # First, split dataset into testing and training
 # Use nrow to get the number of rows in dataframe
 (N <- nrow(csv))
@@ -27,15 +30,15 @@ csv_train <- csv[gp < 0.8, ]
 csv_test <- csv[gp >= 0.8, ]
 
 # Split between independent and dependent variables
-X_train <-  csv_train[,1:3]
-Y_train <-  csv_train[,4]
+X_train <-  csv_train[,1:7]
+Y_train <-  csv_train[,8]
 
-X_test <-  csv_test[,1:3]
-Y_test<-  csv_test[,4]
+X_test <-  csv_test[,1:7]
+Y_test<-  csv_test[,8]
 
 # Run xgb.cv
-cv <- xgb.cv(data = as.matrix(X_train), #Use as.matrix() to convert the data frame to a matrix.
-             label = Y_train, #csv$LowCloud,
+cv <- xgb.cv(data = as.matrix(X_train), # convert the data frame to a matrix.
+             label = Y_train,
              nrounds = 100,
              nfold = 5,
              objective = "reg:linear",
@@ -58,10 +61,9 @@ ntrees
 # Run xgboost
 lcc_xgb <- xgboost(data = as.matrix(X_train), # training data as matrix
                    label = Y_train,  # column of outcomes
-                   nrounds = 21, # number of trees to build (ntrees output)
+                   nrounds = 23, # number of trees to build (ntrees output)
                    objective = "reg:linear", # objective
                    eta = 0.3,
-                   seed = 1,
                    depth = 15,
                    verbose = 0  # silent
 )
@@ -75,7 +77,8 @@ csv_test$prediction <- predict(lcc_xgb, as.matrix(X_test))
 # Plot predictions (x axis) vs actual (y axis)
 ggplot(csv_test, aes(x = prediction, y = LowCloud)) +
   geom_point() +
-  geom_abline()
+  geom_abline() +
+  ggtitle("Predicted vs. actual low cloud cover in the test set")
 
 ## Accuracy assessment
 # Calculate Mean absolute error
