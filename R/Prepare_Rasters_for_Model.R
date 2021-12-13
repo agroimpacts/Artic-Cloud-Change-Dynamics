@@ -12,6 +12,20 @@
 # F. Write data to a format suitable for input to XGBoost
 
 # Load in libraries
+if (!("rlist" %in% installed.packages())) {
+  install.packages("rlist")
+  # auto install some packages that might not be common
+}
+if (!("ggspatial" %in% installed.packages())) {
+  install.packages("ggspatial")
+}
+if (!("ncdf4" %in% installed.packages())) {
+  install.packages("ncdf4")
+}
+if (!("rgdal" %in% installed.packages())) {
+  install.packages("rgdal")
+}
+library(rlist)
 library(sp)
 library(tidyverse)
 library(sf)
@@ -49,7 +63,7 @@ cellStats(x = sicrop, stat = "mean")
 #^^^^^^^^^^^^^^^^^^^^^^^
 # Bring in all of the sea ice time series data
 mystack <- stack()
-files <- list.files(path="/Volumes/My Passport/RProject2021/SeaIce_MonthlySB2/",
+files <- list.files(path="/Volumes/My Passport/RProject2021/SeaIce_MonthlySB2",
                     pattern="*.rst", full.names=TRUE, recursive=FALSE)
 for (x in files) {
   sicbrick <- brick(x) # create a raster brick
@@ -89,13 +103,19 @@ ggplot() +
 #^^^^^^^^^^^^^^^^^^^^^^^
 # Bring in all of the chlorophyll time series data
 mystack <- stack()
-files <- list.files(path="/Volumes/My Passport/RProject2021/MODIS_chl/",
+files <- list.files(path="/Volumes/My Passport/RProject2021/MODIS_chl",
                     pattern="*.nc", full.names=TRUE, recursive=FALSE)
 for (x in files) {
   chlbrick <- brick(x, varname="chlor_a") # create a raster brick
   mystack <- stack(mystack, chlbrick) #stack all of the bricks
 }
 var.chla <- brick(mystack) # create a brick from the stack
+
+substr(files,53,59) # checking out the dates of the files
+pat <- seq(1:11) #chlorophyll has 11 months of data per year
+paste0(substr(list.skip(files, 4),53,56), "_", pat)
+#for checking the dates during the data merge
+# (skipping the first incomplete year)
 
 
 
@@ -114,7 +134,7 @@ NARR_dataprep <- function(NARR_brick, ROI) {
     r <- subset(NARR_brick,i) %>% # running each time slice (works best)
       projectRaster(crs = crs(var.sictif))  %>% #will not work with EPSG#
       crop(y = ROI) #%>% # crop to the DBO3 extent
-      #resample(y = chldbo3varlay1) # Resamples to the chlorophyll pixel extents
+    #resample(y = chldbo3varlay1) # Resamples to the chlorophyll pixel extents
     counter <-  counter + 1 # keep track of which layer we are on in the console
     print(paste0(counter, " out of ", ek[3]))
     time <- append(time, names(r)) # add raster name to a list
@@ -135,8 +155,36 @@ NARR_dataprep <- function(NARR_brick, ROI) {
 # Run for all sea ice data
 NARR_dataprep(var.sic, dbo3)
 
+# Modified function to accomodate the chlorophyll file dates
+CHL_dataprep <- function(NARR_brick, ROI) {
+  ek <- dim(NARR_brick)
+  time <- list()
+  meanlcl <- list()
+  counter <- 0
+  for (i in 1:ek[3]){
+    r <- subset(NARR_brick,i) %>% # running each time slice (works best)
+      projectRaster(crs = crs(var.sictif))  %>% #will not work with EPSG#
+      crop(y = ROI) #%>% # crop to the DBO3 extent
+    #resample(y = chldbo3varlay1) # Resamples to the chlorophyll pixel extents
+    counter <-  counter + 1 # keep track of which layer we are on in the console
+    print(paste0(counter, " out of ", ek[3]))
+    time <- append(time, names(r)) # add raster name to a list
+    k <- cellStats(x = r, stat = "mean") # calculate a mean over ROI
+    meanlcl <- append(meanlcl, k) # add averaged variable to a list
+  }
+  # make a dataframe with the raster name (time) and averaged variable lists
+  nam <- paste0(deparse(substitute(NARR_brick)), ".csv") # for file naming
+  df <- do.call(rbind, Map(data.frame, Time=time, Variable=meanlcl))
+  names(df)[names(df) == 'Variable'] <- substr(nam,5,8) #rename var column
+  df$Year.month.day <- paste0(substr(files, 53, 56), "_",
+                                   substr(files, 57, 59), "_", pat)
+  # export to a csv
+  write.csv(df, file = paste("/Users/claregaffey/Documents/RClass/", nam),
+            row.names = FALSE)#here::here(paste("external/data/", nam)))
+  return(head(df)) # display some rows of our dataframe
+}
 # Run for all chlorophyll data
-NARR_dataprep(var.chla, dbo3)
+CHL_dataprep(var.chla, dbo3)
 
 
 ##########################
