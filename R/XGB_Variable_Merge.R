@@ -19,9 +19,9 @@ NARRdata <- bind_cols(temp) # combine NARR datesets
 chl <- chl %>% mutate(Year = substr(Year.month.day, 1, 4)) %>%
   mutate(JulianDay = substr(Year.month.day, 6, 8))
 
-jul <- as.numeric(chl$JulianDay)
+jul <- as.numeric(chl$JulianDay) # Set up to extract months
 ek <- list()
-for (i in 1:211) { #Convert julian day to month
+for (i in 1:211) { # Convert julian day to month
   print(jul[i])
   k <- date.mdy(jul[i], weekday = FALSE)
   unlist(k)
