@@ -60,7 +60,7 @@ lcc_xgb <- xgboost(data = as.matrix(X_train), # training data as matrix
                    nrounds = 21, # number of trees to build (ntrees output)
                    objective = "reg:linear", # objective
                    eta = 0.3,
-                   seed = 1
+                   seed = 1,
                    depth = 15,
                    verbose = 0  # silent
 )
@@ -87,4 +87,9 @@ csv_test %>%
 csv_test %>%
   mutate(residuals = LowCloud - prediction) %>%
   summarize(RMSE = sqrt(mean(residuals^2)))
+
+# look at the variable importance from the model
+importance_matrix <- xgb.importance(model = lcc_xgb)
+importance_matrix
+xgb.plot.importance(importance_matrix = importance_matrix)
 
