@@ -15,6 +15,11 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, echo=FALSE, results='hide', message=FALSE}
+library(here) # set up working directory
+here::here() # set working directory for images
+
+```
 #### Introduction (or Overview) --Serina
 A more detailed and informative overview of the project's purpose and objectives than what your provided in assignment 6. Approximate maximum length of 400 (individual) to 800 (team, assuming a single package vignette) words.  
 
@@ -25,6 +30,36 @@ For a project that is more tools-oriented, use this section to describe the purp
 #### Results (Worked Examples) --all
 For analytical projects, describe and illustrate your results, using standard scientific reporting conventions: 1) plan on having 2-4 figures; 2) a similar number of statistical summaries; 3) describe the results in your figures and tables in (up to) 400-800 words (range refers to individual versus team efforts). 
 For tools-oriented projects, provide and illustrate 2-4 worked examples of how to use the functions in your package, with descriptive accompanying text that will help users to understand what the functions do and how to apply them (up to 400-800 words; range refers to individual versus team efforts). 
+```{r, out.width = "80%", echo=FALSE, fig.align='center'}
+
+```
+```{r, echo=FALSE, out.height = 300, out.width = 700}
+knitr::include_graphics(here("images/trend_tests.png"))
+```
+
+
+
+````{r}
+png(here::here("images/XGB_VariableImportance.png"), height = 4,
+    width = 4, units  = "in", res = 300, bg = "transparent")
+````
+
+````{r}
+png(here::here("external/slides/figures/XGB_LCC_vs_predicted_testset.png"), height = 4,
+    width = 4, units  = "in", res = 300, bg = "transparent")
+````
+````{r}
+png(here::here("external/slides/figures/SeaIceMap.png"), height = 4,
+    width = 4, units  = "in", res = 300, bg = "transparent")
+`````
+```{r}
+png(here::here("external/slides/figures/SIC_DBO3.png"), height = 4,
+    width = 4, units  = "in", res = 300, bg = "transparent")
+````
+```{r}
+png(here::here("external/slides/figures/LCC_DBO3.png"), height = 4,
+    width = 4, units  = "in", res = 300, bg = "transparent")
+````
 
 #### Discussion --all
 For analytical projects, briefly provide your interpretation of the results, any uncertainties/difficulties encountered, and any next steps to be taken. Up to 400-800 words (range refers to individual versus team efforts).

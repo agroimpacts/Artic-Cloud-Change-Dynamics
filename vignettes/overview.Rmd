@@ -72,12 +72,12 @@ library(trend) #package for running trend analysis
 library(ggplot2) # package for plotting
 library(tidyverse) # to manipulate for plotting
 
-<<<<<<< HEAD
+#<<<<<<< HEAD
 #Change this to match the data location
-ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
+#ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
 #(Clare's path)
 # (Aandishah's path) #C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
-=======
+#=======
 ```
 
 Download the cloud dataset
