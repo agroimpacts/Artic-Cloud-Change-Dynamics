@@ -1,5 +1,6 @@
 library(ncdf4)
 library(spatialEco)
+library(geospaar)
 
 #Setting up the path to data
 
@@ -29,6 +30,8 @@ var.nc
 
 lcdc_1979 <- var.nc[[1:12]]
 
+
+#This takes a while
 lcdc_kendall_test <- raster.kendall(lcdc_1979,
                                     tau = TRUE,
                                     p.value = TRUE,
@@ -37,17 +40,21 @@ lcdc_kendall_test <- raster.kendall(lcdc_1979,
                                     intercept = TRUE,
                                     prewhiten = FALSE,
                                     )
+plot_noaxes(lcdc_kendall_test)
 
-plot(lcdc_kendall_test)
+
+plot(lcdc_kendall_test[[3]])
 plot(lcdc_kendall_test$p.value)
 
 p_Value <- lcdc_kendall_test[[3]]
 High_sig <- p_Value > 0.05
 
 
-cols <- c("tan", "yellow3", "green4")
+cols <- c("red", "yellow3", "green4")
 plot_noaxes(High_sig, legend = FALSE, main = "High Signifance", col = cols,
             mar = c(0, 0, 1, 0))
+
+plot_noaxes(lcdc_kendall_test[[1]]) %>% plot(High_sig)
 
 
 

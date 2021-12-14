@@ -4,10 +4,11 @@ authors: Aandishah Tehzeeb Samara, Serina Khalifa, Clare Gaffey
 output: ioslides_presentation
 ---
 
-```{r, eval = FALSE}
+```{r, echo = FALSE, eval = FALSE, results='hide', message=FALSE}
 setwd(dir = "vignettes/slides")
 rmarkdown::render(input = "Presentation.Rmd", output_file = "Presentation.html")
 # This is to make the html output appear in the folder where you want it.
+knitr::include_graphics(here("images/hcdc2021_09.png"))
 ```
 
 ```{r setup, include=FALSE}
@@ -18,34 +19,15 @@ library(here) # set up working directory
 here::here() # set working directory for images
 
 ```
-## Outline:
-- Introduction (1-3 slides) (Serina, Clare (regression), Aandishah (editor))
-- Data and Methods (2-4 slides) Methods (Aandhsish (1-2 + energy budget), 
-- Results (2-4 slides) (Aandishah (2-3), Clare (1-2))
-- Future work (1-3 slides) (Detrending?)
-
-
-## Slide with R Output
-
-```{r cars, echo = TRUE}
-summary(cars)
-```
-
-## Slide with Plot
-
-```{r pressure}
-plot(pressure)
-```
 
 ## Introduction
 
-Gradient Boosting is a machine learning technique used for regression and classification.
-Similar to random forest, it uses an ensemble of decision trees to learn how independent
-variables predict the dependent variable. Unlike random forest, trees are built upon
-through boosting, so trees are iteratively improved instead of averaged out by
-many individual trees. This package extracts information from several raster datasets
-and builds a gradient boosting model to determine the most important variables
-that influence low cloud cover concentration over the Chukchi Sea.
+- Our main questions: 
+  - What influences different altitude cloud cover in the Pacific Arctic? Does this relationship change seasonally? 
+  - How has the Pacific Arctic Region Cloud Cover changed over time and what are their drivers? 
+  - How has the energy budget changed over time?
+
+
 
 ## Data:
 - NARR Reanalysis: (1979-2020)
@@ -57,36 +39,90 @@ that influence low cloud cover concentration over the Chukchi Sea.
   - Relative humidity
 - NASA MODIS-Aqua chlorophyll concentration (2002-2020)
 - DoD SSMI/S sea ice concentration (1979-2020)
+- NASA CERES Satellite Data (2000-2015)
 
 
-## Methods: Gradient Boosting Regression to find the drivers of low cloud cover concentration in the Chukchi Sea. {.smaller}
-1. Monthly composites were downloaded (external/data/Download_Datasets.R)
-2. Variables were converted to raster bricks, projected, cropped to the region
+## Original NetCDF Data
+```{r, echo=FALSE, out.height = 400, out.width = 600}
+knitr::include_graphics(here("images/prelim_subplots.png"))
+```
+
+
+## Methods:  <br> <font size= "6"> Preprocessing </font> 
+- Monthly composites were downloaded (external/data/Download_Datasets.R)
+- Variables were converted to raster bricks, projected, cropped to the region
     of interest, and monthly averages were saved to a dataframe and exported
     to a csv to be combined into one master dataframe 
-    (R/Prepare_Rasters_for_Model.R, R/XGB_Variable_Merge.R)
-3. For running the gradient boosting model (XGBoost) the data were partitioned 
-    into training and testing, trained a model, and then used accuracy 
-    assessment to find the optimum number of trees used to tune the final 
-    XGBoost model.
-## 
-```{r, echo=FALSE, out.height = 400, out.width = 500}
-knitr::include_graphics(here("images/SeaIceMap.png"))
-knitr::include_graphics(here("images/SIC_DBO3.png"))
-knitr::include_graphics(here("images/LCC_DBO3.png"))
+    (R/Opening_NCDF.R/NARR.R, R/Prepare_Rasters_for_Model.R, R/XGB_Variable_Merge.R)
+    
+    
+    
+## Figure 1
+```{r, echo=FALSE, out.height = 400, out.width = 600}
+knitr::include_graphics(here("images/Inset_Study_Site.png"))
 ```
 
-## Results
-```{r, echo=FALSE, out.height = 400, out.width = 500}
-knitr::include_graphics(here("XGB_LCC_vs_predicted_testset.png"))
+
+## Methods:  <br> <font size= "10"> Extracting Values from DBO 3 </font> 
+
+- Since the files, were so large, we subset the data to DBO 3, and extracted the values from each variable from within it, then merged all the data to one data frame.
+(R/Narr_Variable_Merge.R)
+- The analysis of each variable's monthly trends were then plotted 
+
+## Result: 
+```{r, echo=FALSE, out.height = 400, out.width = 600}
+knitr::include_graphics(here("images/ALL_Trends.png"))
 ```
-## Results
+
+
+## Correlation Trend
+```{r, echo=FALSE, out.height = 400, out.width = 600}
+knitr::include_graphics(here("images/Sea__Ice_vs_Clouds.png"))
+```
+
+
+## Method:  <br> <font size= "10"> Mann Kendall Trends </font> 
+- For understanding the spatial trends for the different variables we did the Mann Kendall Test
+-This was done using the raster.kendall function through the SpatialEco package. 
+- We also found the p value, z value, confidence and tau values. 
+
+## Mann Kendall Results
+```{r, echo=FALSE, out.height = 500, out.width = 800}
+knitr::include_graphics(here("images/kendall_test_results.png"))
+```
+
+## Methods: <br> <font size= "6"> Gradient Boosting Regression to find the drivers of low cloud cover concentration in the Chukchi Sea. </font>
+
+<font size= "4"> 
+
+- Gradient Boosting is a machine learning technique used for regression and classification.
+Similar to random forest, it uses an ensemble of decision trees to learn how independent
+variables predict the dependent variable. Unlike random forest, trees are built upon
+hrough boosting, so trees are interactively improved instead of averaged out by
+many individual trees. This package extracts information from several raster datasets
+and builds a gradient boosting model to determine the most important variables
+that influence low cloud cover concentration over the Chukchi Sea.
+
+- For running the gradient boosting model (XGBoost) the data were partitioned 
+into training and testing, trained a model, and then used accuracy assessment to find the optimum number of trees used to tune the final 
+    XGBoost model.
+    
+</font>
+
+
+## XGBoost Prediction Results
+```{r, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/XGB_LCC_vs_predicted_testset.png"))
+```
+
+## XGBoost Variable Importance Results
 ```{r, echo=FALSE, out.height = 400, out.width = 500}
 knitr::include_graphics(here("images/XGB_VariableImportance.png"))
 ```
 
-
 ## Future Work:
-- Detrending
-- Improve model accuracy
+- Due to the limitation in time there were a few steps we were not able to do. 
+- This included the detrending of the data from any external factors that would be impacted by it. 
+For instances, with such a large time line, it would be impacted by the Arctic Oscillation or the Pacific Decadal Oscillation 
+- Improving Accuracy of the Model
 
