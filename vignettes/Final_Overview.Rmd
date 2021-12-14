@@ -15,6 +15,18 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, echo=FALSE, results='hide', message=FALSE}
+library(here) # set up working directory
+here::here() # set working directory for images
+
+```
+
+The package can be installed using devtools
+```{r, eval=FALSE, results='hide', message=FALSE}
+devtools::install_github("agroimpacts/arcticdynamics", build_vignettes = TRUE)
+browseVignettes("arcticdynamics")
+```
+
 #### Introduction (or Overview) --Serina
 A more detailed and informative overview of the project's purpose and objectives than what your provided in assignment 6. Approximate maximum length of 400 (individual) to 800 (team, assuming a single package vignette) words.  
 
