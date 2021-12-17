@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 ```{r setup}
 # library(asc346)
 ```
-#### _Summary: A brief (up to 250 words) description of the project, and a bullet point or enumerated list of its primary objectives._
+#### _Summary
 
 As climate change causes rapid warming across the world, the effect is the direst in the Arctic which is warming twice as fast as the rest of the world. It is predicted that by the year 2050, Arctic summers will be sea ice free. The complexity of the Earth’s climate system and its feedback entails that the effects of melting of sea ice have coupled effects in the hydroclimate. As bright sea ice melts exposing the dark deep ocean underneath, the surface transforms from a high albedo surface to a low albedo surface.  This change in albedo is the driver for the increased warming in the Arctic. With more open ocean exposed, combined with the warmer temperatures, the surface is more prone to evaporation. Increase in ocean water evaporation leads to more water vapor available for cloud formation. Cloud cover is one of the largest barriers to creating accurate future climate models, since their impacts on the hydroclimate are difficult to predict and account for. Clouds, with their high albedo, reflect more sunlight, but also act as barrier that traps heat inside the Earth’s surface. In the Arctic especially, clouds play different roles during different season as the type of clouds change seasonally. These changes in cloud structure impact their role in the feedback systems. By analyzing the vertical structure of the clouds in the Arctic, it would give us insight as to how the changes in climate change and sea ice have impacted it. 
 
@@ -72,12 +72,6 @@ library(trend) #package for running trend analysis
 library(ggplot2) # package for plotting
 library(tidyverse) # to manipulate for plotting
 
-<<<<<<< HEAD
-#Change this to match the data location
-ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
-#(Clare's path)
-# (Aandishah's path) #C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/hcdc.mon.mean.nc"
-=======
 ```
 
 Download the cloud dataset
@@ -96,8 +90,6 @@ Unpack the netcdf
 ```{r,  warning = FALSE, message = FALSE}
 #Once you downloaded the data, change this to match the data location
 ppath <- here::here("external/data/hcdc.mon.mean.nc")
->>>>>>> a3de6d412d97d3c3ca4e3983feb9de40af65a357
-
 nc_data <- nc_open(ppath) 
 nc_data # take a look at the file
 
@@ -135,7 +127,7 @@ length(tmp_vec)
 
 # create dataframe and add names 
 df <- data.frame(cbind(lonlat,tmp_vec))
-names(df) <- c("lon","lat", paste("hcdc",as.character(m), sep="_"))
+names(df) <- c("lon","lat", paste("hcdc", as.character(m), sep="_"))
 
 # take a look at our new dataframe
 head(na.omit(df), 10)
@@ -162,14 +154,9 @@ knitr::include_graphics(here("images/boxplot.png"))
 Prepare for plotting
 ```{r,  warning = FALSE, message = FALSE, eval = FALSE}
 #Enter Path to data below
-<<<<<<< HEAD
-#ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/"
-ppath <- "C:/Users/aandi/Desktop/Fall_2021/GEOG_399/Datasets/" # point to dataset folder
-=======
 # The data cannot be saved in the github repo
 # To download the 
 ppath <- here::here("external/data/") # point to dataset folder
->>>>>>> a3de6d412d97d3c3ca4e3983feb9de40af65a357
 ncpath <- ppath
 
 #High Cloud Area Fraction
