@@ -55,7 +55,7 @@ knitr::include_graphics(here("images/trend_tests.png"))
 ```
 
 
-To rank influencing factors of low altitude cloud cover, a gradient boosting regression model will be run for all of the available data, as well as separately run per season (JJA, SON, DJF, MAM as summer-spring). The XGBoost package will be used for this step. The analysis will follow the 80-10-10 procedure, using 80% of the data for training the model, 10% for testing, and 10% for validation. An accuracy assessment will be conducted for the models using the mean absolute error metric.
+To rank influencing factors of low altitude cloud cover, a gradient boosting regression model will be run for all of the available data, as well as separately run per season (JJA, SON, DJF, MAM as summer-spring). The XGBoost package will be used for this step. The analysis will follow the 80-10-10 procedure, using 80% of the data for training the model, 20% for testing. An accuracy assessment will be conducted for the models using the mean absolute error metric.
 
 ##### _Data: A brief (~250 words) description and visualization of the datasets you will be using. That means spatial plots of the main datasets and their key values, and, as a bonus, a plot of summary statistics, e.g. a histogram or boxplot of one of the more importants variables in the dataset._
 

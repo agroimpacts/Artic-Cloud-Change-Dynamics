@@ -15,17 +15,105 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#### Introduction (or Overview)
-A more detailed and informative overview of the project's purpose and objectives than what your provided in assignment 6. Approximate maximum length of 400 (individual) to 800 (team, assuming a single package vignette) words.  
+```{r, echo=FALSE, results='hide', message=FALSE}
+library(here) # set up working directory
+here::here() # set working directory for images
 
-#### Methods (or Approach)
-For a more analytical project, provide a complete description of the methods you used to undertake the analysis, complete with informative illustrations and summaries of the input datasets. Approximate maximum length of 400 (individual) to 800 words. 
-For a project that is more tools-oriented, use this section to describe the purpose and rationale of the functions/capabilities you are developing, what other packages/software/tools it is building on, and provide informative illustrations and summaries of the dataset(s) you are using to demonstrate your functions. Same approximate length. 
+```
 
-#### Results (Worked Examples)
-For analytical projects, describe and illustrate your results, using standard scientific reporting conventions: 1) plan on having 2-4 figures; 2) a similar number of statistical summaries; 3) describe the results in your figures and tables in (up to) 400-800 words (range refers to individual versus team efforts). 
-For tools-oriented projects, provide and illustrate 2-4 worked examples of how to use the functions in your package, with descriptive accompanying text that will help users to understand what the functions do and how to apply them (up to 400-800 words; range refers to individual versus team efforts). 
+The package can be installed using devtools
+```{r, eval=FALSE, results='hide', message=FALSE}
+devtools::install_github("agroimpacts/arcticdynamics", build_vignettes = TRUE)
+browseVignettes("arcticdynamics")
+```
 
-#### Discussion
-For analytical projects, briefly provide your interpretation of the results, any uncertainties/difficulties encountered, and any next steps to be taken. Up to 400-800 words (range refers to individual versus team efforts).
-For tools-oriented projects, describe any limitations of the package, improvements that can be made, and any plans to undertake these. Up to 400-800 words (range refers to individual versus team efforts).  
+#### Introduction
+  
+Our project uses cloud cover data to address global climate change. Parameterizations related to clouds are the most challenging and greatest source of disagreement among GCMs or general circulation models. Predicting the future effects of cloud cover impact on the hydrosphere is difficult. Clouds change seasonally and each play a different role in their feedback system. We want to answer four main questions using our data: 1) What influences different altitude cloud cover in the Pacific Arctic? 2) How has the Pacific Arctic Region Cloud Cover changed over time and what are their drivers? 3) How has the energy budget changed over time? By analyzing the vertical structure of the clouds in the Arctic, we get to see how the impacts of climate change and sea ice changes it over time. 
+
+The cloud cover datasets involve low, medium, and high altitudes from NARR or North American Regional Reanalysis. These datasets were then downloaded as NetCDFs. Other variables that were manipulated were wind speed at 10m, air temperature, evaporation, geopotential height, and relative humidity. We also used datasets such as a monthly MODIS (2002-2021) chlorophyll-a concentrations, monthly composited SB2 sea ice concentration available from 1979-2020, and monthly NASA CERES satellite from March 2000 – May 2015. 
+
+Some packages being used are ncdf4, raster, trend, rgdal, etc. We use the ncdf4 package to read, slice and write the NARR, chlorophyll, and CERES data. Raster will be used to plot the data outputs from NARR. To run the non-parametric trend tests and change point detections, the trend package will be used. The XGBoost package is used to rank influencing factors of low altitude cloud cover by running a gradient boosting regression model on the data, as well as per season (JJA, SON, DJF, MAM as summer-spring). The analysis follows the 80-10-10 procedure, using 80% of the data for training the model, 10% for testing, and 10% for validation. An accuracy assessment was conducted for the models using the mean absolute error metric. 
+
+Our entire project outline starts with creating a shapefile to map the Pacific Arctic Region. Then, we downloaded the NARR, Chlorophyll and Sea Ice Concentration, and NASA CERES satellite data. After, we reprojected our data and resample the chlorophyll and sea ice data to match the extent of the NARR Data. We aggregated all the data monthly and seasonally. Next, we created time series Linear Regression Maps for each month and season for each variable (1979-2020). Then, we calculated net energy budget at specific locations using latitude and longitude. We then created correlation graphs between each variable and sea ice. The XGBoost package is used for cloud cover analysis. Following that, we extracted values of the average of each variable from within the DBO sites and plotted line graphs to understand the change over time. The final part of our project was cleaning up our workspace on GitHub and creating visualization of all the maps to present. 
+
+## Data:
+- NARR Reanalysis: (1979-2020)
+  - Cloud cover at three altitude levels (low, medium, and high)
+  - Wind speed at 10 m
+  - Air temperature
+  - Evaporation
+  - Geopotential height
+  - Relative humidity
+- NASA MODIS-Aqua chlorophyll concentration (2002-2020)
+- DoD SSMI/S sea ice concentration (1979-2020)
+
+## Methods: 
+ 
+Monthly composites were downloaded (external/data/Download_Datasets.R) for low cloud cover and all of the independent variables for the full extent of their records. Variables were converted to raster bricks, projected, cropped to the region of interest, and monthly averages were saved to a dataframe and exported to a csv (R/Prepare_Rasters_for_Model.R) . Two functions were created in this process; one tailored to the netcdf formats that the NARR Reanalysis time series data were provided in and the second for the chlorophyll data, which consisted of individual netcdf files with each file containing one month of data. Resampling to the chlorophyll pixel extent was also included in the NARR_dataprep function to be used in pixel-by-pixel regression modeling. For this demo however, this feature is commented out and the monthly variables were instead averaged over the region of interest (DBO3 in the Chukchi Sea). The output csvs were formatted to have matching years and dates and then merged and saved into a master csv (R/XGB_Variable_Merge.R). The datasets are large and take hours to process, so breaking up data processing into steps and saving outputs as csvs was important to be able to revisit the project without risk of loss of information from the global environment. For the gradient boosting model (Gradient_Boosting_Model.R), the data were split into 80% training and 20% testing datasets using random uniformly distributed selection of indexes of the dataframe. The gradient boosted model was first run using default settings. From the initial run, the optimal number of trees that produced the minimum Root Mean Square Error (RMSE) was used as an input to tune a second XGBoost model. The accuracy assessment included RMSE and Mean Absolute Error (MAE) and predicted versus actual low cloud cover was plotted for the test dataset. 
+
+
+## Results
+
+#### Line Plots: 
+
+In order to understand, how these variables where changing across time, we plotted line graphs for each variables across time, per month. 
+
+```{r Line Plots, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/ALL_Trends.png"))
+```
+
+In particular, we were interested at looking at the correlation between the low clouds and how they were impacted by sea ice cover. This was done with the use of a scatter plot. 
+
+#### Correlation Trends: 
+
+```{r Correlation Plot, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/Sea__Ice_vs_Clouds.png"))
+```
+
+#### Mann Kendall Results: 
+
+Monthly Trend analysis was conducted using the Theil-Sen's Estimator (TSS) and Mann-Kendall Significance using the raster.kendall function of the SpatialEco Package.. The TSS is the median of all the slopes between pairwise coincident points throughout the time series and was used instead of an Ordinary least square (OLS) regression as, being nonparametric, it is less sensitive to outliers present. 
+The statistical significance of the TSS was evaluated using the nonparametric trend MKS which produces a p-Value image expressing whether the probability of the observed trend has occurred by chance. p-Values were classified to find the locations in the image with significant trends at a 95% confidence interval (p <0.05).  
+
+```{r, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/kendall_test_results.png"))
+```
+
+#### Gradient Boosting Model
+The initial run of the gradient boosted model provided 23 as the optimum number of trees to reduce RMSE. The next model run on the training data tuned with 23 trees. The model predictions compared to the test datasets produced a MAE of -0.6 and a RMSE of 12.
+```{r, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/XGB_LCC_vs_predicted_testset.png"))
+```
+
+The gain, cover, and frequency was determined for each variable. For brevity, the order of variable importance is illustrated in the bar plot below. Evaporation was the major influencing variable on low cloud cover concentration. The remaining variables were wind speed at 10 m, geopotential height, air temperature, relative humidity, sea ice, and ocean chlorophyll in order of most important to least important.
+
+
+```{r, echo=FALSE, out.height = 400, out.width = 500}
+knitr::include_graphics(here("images/XGB_VariableImportance.png"))
+```
+
+
+## Discussion 
+
+#### Importance of Variables: 
+
+The assessment of the changes of the individual variables helped visualize the differences in seasonality in the variables and how they impact the climate in the Pacific Arctic Region. 
+
+In particular, looking at the Correlation trend showed us how important the monthly sea ice variability is to the low cloud cover trends. 
+
+#### Mann Kendall Test: 
+
+The trend test, highlights the regions where these trends are occuring, the direction of the patterns (positive or negative) and whether the trend is a statistically significant one. 
+
+These are quickly accessed by the R tool. In particular, with the help of the dply tools which subset the data, it is easy to quickly analyze multiple different groups of analysis - such as monthly trends, yearly trends and annual trends. 
+
+#### XGBoost Results: 
+
+The gradient boosted model performed poorly for the test dataset, as indicated by the RMSE and MAE. This suggests that we did not include essential variables for determining the drivers for low cloud cover. More steps can be made to fine tune the model that would increase the model's accuracy. Future work would include incorporating more datasets as independent variables, and taking advantage of more advanced features of XGBoost to tune the model.
+
+## Conclusion and future work 
+
+This project was a short overview about the capabilities of R in the use of Earth Sciences and it's use in conducting research looking at biogeophysical trends and their changes over time. 
+
+One limitation of our work is that the line and trends do not account for the changes occuring due to natural climatic factors such as the Arctic Oscillation or the Pacific Decadal Oscillation. Hence, it would be helpful to detrend the data or run multi-regression models with those indexes to understand how they impact the climatic varibles. Comparing these varibles without their impact would show how much they affect each other rather than how they are all impacted by an external factor. 
