@@ -4,7 +4,7 @@ output: rmarkdown::html_vignette
 authors: Aandishah Tehzeeb Samara, Serina Khalifa, Clare Gaffey
 date: "2021-11-10"
 vignette: >
-  %\VignetteIndexEntry{overview}
+  %\VignetteIndexEntry{Final Overview}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 

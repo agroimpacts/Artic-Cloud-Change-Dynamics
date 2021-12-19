@@ -1,15 +1,9 @@
 Package: articdynamics
 Title: Arctic Cloud Change Dynamics
 Version: 0.0.1.0000
-Authors@R: 
-    person(given = "Clare",
-           family = "Gaffey")
-    person(given = "Aandishah",
-          family = "Samara"),
-    person(given = "Serina",
-            family = "Khalifa")
+Author: Clare Gaffey, Aandishah Samara, Serina Khalifa
 Description: Analyzes trends of cloud cover in the Pacific Arctic and runs a gradient 
-boosted model to find drivers of low cloud cover.
+    boosted model to find drivers of low cloud cover.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8

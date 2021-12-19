@@ -87,7 +87,7 @@ browseURL(url)
 
 Unpack the netcdf
 
-```{r,  warning = FALSE, message = FALSE}
+```{r, warning = FALSE, message = FALSE}
 #Once you downloaded the data, change this to match the data location
 ppath <- here::here("external/data/hcdc.mon.mean.nc")
 nc_data <- nc_open(ppath) 
@@ -104,7 +104,7 @@ t <- ncvar_get(nc_data, "time_bnds")
 
 Get some information from the High Cloud Cover NetCDF
 
-```{r,  warning = FALSE, message = FALSE}
+```{r,  warning = FALSE, message = FALSE, eval=FALSE}
 # get summary statistics for high cloud fraction area for all time periods
 summary(highCC)
 
